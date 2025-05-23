@@ -8,6 +8,7 @@ import {showEditTaskFormHtml} from "./edit-task-popup"
 import {SubTaskItem} from "./Model/SubTaskItem";
 import {LoginService} from "./service/login-service";
 import { send } from 'emailjs-com';
+import styles from "./styles/coulumn.module.scss";
 
 
 const ColumnData = ({reload}) => {
@@ -47,7 +48,7 @@ const ColumnData = ({reload}) => {
     const doneData = data.filter((taskItem) => taskItem.status == "Done");
 
     return (
-        <div id="column-grid" class="disabled:disabled">
+        <div id={styles.columnGrid} class={`${styles.disabled}:disabled`}>
             {Table(users, toDoData, "ToDo")}
             {Table(users, inProgData, "InProgress")}
             {Table(users, doneData, "Done")}
@@ -78,32 +79,36 @@ function Table(users: { username: string, email: string }[], data: TaskItem[], s
                 console.log('FAILED...', err);
             });
     }
+
     return (
-        <div class="column" id={divId}>
-            <h2 class={`${status}-h2`}>{status}</h2>
-            <table className="task-table">
+        <div class={styles.column} id={divId}>
+            <h2 class={
+                status == 'ToDo' ? styles.ToDoH2 :
+                    status == 'InProgress' ? styles.InProgressH2 :
+                        styles.DoneH2}>{status}</h2>
+            <table className={styles.taskTable}>
                 <tbody>
                 {data.map((taskItem) => (
                     <tr>
-                        <td class="assignmentCell">
+                        <td class={styles.assignmentCell}>
                             <select id="assignUser"
                                     value={taskItem.assignment}
                                     onChange={(e) => ChangeAssignee((e.target as HTMLSelectElement).value, taskItem)}
                             >
-                                <option default={true}>Unassigned</option>
+                                <option>Unassigned</option>
                                 {users.map((user) => (
                                     <option key={user.username} value={user.username}>{user.username}</option>
                                 ))}
                             </select>
                         </td>
-                        <td class="titleCell">{taskItem.title}</td>
+                        <td class={styles.titleCell}>{taskItem.title}</td>
                         <td class={DeadlineStyle(taskItem)}>{FormatDate(taskItem.deadline)}</td>
-                        <td class="importanceCell">
-                            <img class="tableImg" src={SelectPrioImage(+taskItem.importance)}
+                        <td class={styles.importanceCell}>
+                            <img class={styles.tableImg} src={SelectPrioImage(+taskItem.importance)}
                                  alt={taskItem.importance}/>
                         </td>
-                        <td class="editCell">
-                            <img className="tableImg" src={EditSVG} alt="Edit"
+                        <td class={styles.editCell}>
+                            <img className={styles.tableImg} src={EditSVG} alt="Edit"
                                  onClick={() => showEditTaskFormHtml(taskItem)}/>
                         </td>
                     </tr>
@@ -140,15 +145,15 @@ export function DeadlineStyle(taskItem: TaskItem | SubTaskItem): string {
     const today = SplitDate(new Date().toISOString());
 
     if (+deadline[0] < +today[0]) {
-        return "deadlineCellYesterday";
+        return styles.deadlineCellYesterday;
     } else if (+deadline[1] < +today[1]) {
-        return "deadlineCellYesterday";
+        return styles.deadlineCellYesterday;
     } else if (+deadline[2] < +today[2]) {
-        return "deadlineCellYesterday";
+        return styles.deadlineCellYesterday;
     } else if (+deadline[2] == +today[2]) {
-        return "deadlineCellToday";
+        return styles.deadlineCellToday;
     }
-    return "deadlineCell";
+    return styles.deadlineCell;
 }
 
 export function SelectPrioImage(prio: number): string {

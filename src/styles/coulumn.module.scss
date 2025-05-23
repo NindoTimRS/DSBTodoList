@@ -1,0 +1,160 @@
+$AllBG: #232C3D;
+$ContainerBG: #2F3A4F;
+$InputContainerBG: #262F40;
+$DarkBlue: #3F51B5;
+$DarkRed: #CD5F4E;
+$CyanFont: #42E4C5;
+$SubmitGreen: #28a745;
+$SubmitGreenHover: #28b745;
+$CloseGrey: #6c757d;
+$CloseGreyHover: #5a6268;
+$FontColor: white;
+$FontcolorDivisions: rgb(255, 255, 255);
+$FontSizeButtons: 18px;
+@use "sass:color";
+
+
+.disabled {
+  pointer-events: none;
+  filter: blur(5px);
+}
+
+.tableImg {
+  width: 24px;
+  height: 24px;
+
+}
+
+
+
+#columnGrid {
+  gap: 24px;
+  margin-right: 15px;
+  margin-left: 15px;
+
+  .column {
+    margin-top: 24px;
+    background: #1b1b1b;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 3px solid #ffb100;
+
+    h2 {
+      margin-bottom: 16px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid;
+    }
+
+    .ToDoH2 {
+      color: lightgrey;
+    }
+
+    .InProgressH2 {
+      color: aquamarine;
+    }
+
+    .DoneH2 {
+      color: green;
+    }
+
+
+    .taskTable {
+      max-height: 650px;
+      border-collapse: collapse;
+
+      tr {
+        display: table-row;
+
+        td {
+          padding: 12px 16px;
+          text-align: center;
+          line-height: 1.2;
+        }
+
+        .assignmentCell {
+          width: 15%;
+          select{
+            display: inline-block;
+            padding: 6px 12px;
+            border: 2px solid;
+            border-radius: 5px;
+            font-weight: bold;
+            background: #1b1b1b;
+            color: $FontColor;
+            text-align: center;
+            option{
+              background: black;
+              color: $FontColor;
+              text-align: center;
+            }
+            &:hover{
+              cursor: pointer;
+              transform: scale(1.05);
+            }
+          }
+        }
+
+        .titleCell {
+          width: 45%;
+        }
+
+        .deadlineCell {
+          width: 30%;
+        }
+
+        .deadlineCellYesterday {
+          width: 30%;
+          color: red;
+        }
+
+        .deadlineCellToday {
+          width: 30%;
+          color: yellow;
+        }
+
+        .importanceCell {
+          width: 5%;
+        }
+
+        .editCell {
+          width: 5%;
+
+          &:hover {
+            cursor: pointer;
+            transform: scale(1.2);
+          }
+        }
+      }
+
+      tr:hover {
+        background: #2b2b2b;
+
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 1170px) {
+
+  #columnGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 1169px) {
+
+  #column-grid {
+    display: flex;
+    font-size: medium;
+    flex-direction: column;
+
+    .column {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

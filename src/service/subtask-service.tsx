@@ -1,4 +1,5 @@
 import {TaskItem} from "../Model/TaskItem";
+import {getToken} from "../auth";
 
 export class SubTaskService {
     private apiPath = "http://localhost:6969/api/subtask";
@@ -8,16 +9,16 @@ export class SubTaskService {
     }
 
     async PutSubTaskItem(taskId: string, body: string): Promise<string> {
-        return await fetch(`${this.apiPath}/${taskId}`, {method: "PUT", body: body})
+        return await fetch(`${this.apiPath}/${taskId}`, {method: "PUT", headers: {Authorization: `Bearer ${getToken()}`,}, body: body})
             .then(res => res.text())
     }
     async DeleteSubTaskItem(taskId: string): Promise<string> {
-        return await fetch(`${this.apiPath}/${taskId}`, {method: "DELETE"})
+        return await fetch(`${this.apiPath}/${taskId}`, {method: "DELETE", headers: {Authorization: `Bearer ${getToken()}`,}})
             .then(res => res.text())
     }
 
     async PatchSubTaskItem(taskId: number, body: string): Promise<string> {
-        return await fetch(`${this.apiPath}/${taskId}`, {method: "PATCH", body: body})
+        return await fetch(`${this.apiPath}/${taskId}`, {method: "PATCH", headers: {Authorization: `Bearer ${getToken()}`,}, body: body})
             .then(res => res.text())
     }
 }

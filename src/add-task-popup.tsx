@@ -1,17 +1,27 @@
 
 import {PostTaskItem} from "./Model/PostTaskItem";
 import {TaskService} from "./service/task-service";
+import headerStyles from "./styles/header.module.scss"
+import columnStyles from "./styles/coulumn.module.scss"
+import popupStyles from "./styles/popup.module.scss"
+import {useState} from "preact/hooks";
 
 const AddTaskPopup = ({onPost}) => {
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [deadline, setDeadline] = useState("");
+    const [importance, setImportance] = useState("1");
+    const [repeat, setRepeat] = useState(false);
+    const [interval, setInterval] = useState("0");
     const postTask = async ()=> {
         const TaskItem: PostTaskItem = {
             status: "ToDo",
-            title: (document.getElementById("title") as HTMLInputElement).value,
-            description: (document.getElementById("description") as HTMLInputElement).value,
-            deadline: (document.getElementById("deadline") as HTMLInputElement).value,
-            importance: +(document.getElementById("priority") as HTMLInputElement).value,
-            repeat: (document.getElementById("repeat") as HTMLInputElement).checked,
-            interval: +(document.getElementById("priority") as HTMLInputElement).value,
+            title: title,
+            description: description,
+            deadline: deadline,
+            importance: +importance,
+            repeat: repeat,
+            interval: +interval,
             assignment: null
         };
         let taskService = new TaskService();
@@ -23,40 +33,40 @@ const AddTaskPopup = ({onPost}) => {
     }
 
     return (
-        <div id="addTaskForm" class="addTaskForm visibleDisplay">
+        <div id={popupStyles.addTaskForm} class={`${popupStyles.addTaskForm} ${popupStyles.visibleDisplay}`}>
             <div>
                 <h3>Add new Task!</h3>
             </div>
             <form onSubmit={postTask}>
-                <div className="taskFormBody">
+                <div className={popupStyles.taskFormBody}>
                     <label htmlFor="title">Title*</label>
-                    <input className="AddInput" type="text" id="title" placeholder="Title" required/>
+                    <input className={popupStyles.addInput} type="text" id="title" placeholder="Title" required onInput={(e) => setTitle(e.currentTarget.value)}/>
                     <br/>
                     <label htmlFor="description">Description*</label>
-                    <textarea className="AddInput" id="description" placeholder="Description" required></textarea>
+                    <textarea className={popupStyles.addInput} id="description" placeholder="Description" required onInput={(e) => setDescription(e.currentTarget.value)}></textarea>
                     <br/>
                     <label htmlFor="deadline">Deadline*</label>
-                    <input className="AddInput" type="datetime-local" id="deadline" required/>
+                    <input className={popupStyles.addInput} type="datetime-local" id="deadline" required onInput={(e) => setDeadline(e.currentTarget.value)}/>
                     <br/>
                     <label htmlFor="priority">Priority*</label>
-                    <select className="AddInput" id="priority" required>
+                    <select className={popupStyles.addInput} id="priority" required onInput={(e) => setImportance(e.currentTarget.value)}>
                         <option value="1">low</option>
                         <option value="2">medium</option>
                         <option value="3">high</option>
                     </select>
                     <br/>
                     <label htmlFor="repeat">Repeating task?</label>
-                    <input className="AddInput" type="checkbox" onChange={changed} id="repeat" name="email"/>
+                    <input className={popupStyles.addInput} type="checkbox" onChange={changed} id="repeat" name="email" onInput={(e) => setRepeat(e.currentTarget.checked)}/>
                     <br/>
-                    <div id="repeating" className="hidden">
+                    <div id="repeating" className={popupStyles.hidden}>
                         <label htmlFor="interval">Repeating Interval:</label>
-                        <input className="AddInput" type="number" id="interval" placeholder="Interval"/>
+                        <input className={popupStyles.addInput} type="number" id="interval" placeholder="Interval" onInput={(e) => setInterval(e.currentTarget.value)}/>
                     </div>
                     <br/>
                 </div>
                 <div className="confirmations">
-                    <button className="submitButton" type="submit">Submit</button>
-                    <button className="closeButton" type="button" onClick={() => ClearAddForm(true)}>Close</button>
+                    <button className={popupStyles.submitButton} type="submit">Submit</button>
+                    <button className={popupStyles.closeButton} type="button" onClick={() => ClearAddForm(true)}>Close</button>
                 </div>
             </form>
         </div>
@@ -64,7 +74,7 @@ const AddTaskPopup = ({onPost}) => {
 };
 
 function changed() {
-    document.getElementById("repeating")!.classList.toggle("hidden");
+    document.getElementById("repeating")!.classList.toggle(popupStyles.hidden);
 }
 
 
@@ -74,15 +84,18 @@ function ClearAddForm(clearFrom: boolean) {
         let inputs = document.getElementsByClassName("AddInput");
         for (let input of inputs) {
             (input as HTMLInputElement).value = "";
-            (input as HTMLInputElement).classList.remove("notFilled");
+            (input as HTMLInputElement).classList.remove(popupStyles.notFilled);
         }
     }
 }
 
 export function ToggleAddTaskFormHtml() {
-    document.getElementById("addTaskForm")!.classList.toggle("visibleDisplay");
-    document.getElementById('column-grid')!.classList.toggle('disabled');
-    (document.getElementById('addButton')! as HTMLButtonElement).disabled = !(document.getElementById('addButton')! as HTMLButtonElement).disabled;
+    document.getElementById(popupStyles.addTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
+    document.getElementById(columnStyles.columnGrid)!.classList.toggle(columnStyles.disabled);
+    const buttons = (document.getElementsByClassName(headerStyles.iconBtn)! as HTMLCollectionOf<HTMLButtonElement>)
+    for (let i = 0; i < buttons.length; i++) {
+        buttons[i].disabled = !buttons[i].disabled;
+    }
 }
 
 
