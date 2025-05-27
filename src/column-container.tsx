@@ -13,12 +13,28 @@ import { send } from 'emailjs-com';
 import styles from "./styles/coulumn.module.scss";
 
 
-const ColumnData = ({reload, onEdit}) => {
+const ColumnData = ({reload, onEdit, search}) => {
     const [data, setData] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const taskService = new TaskService();
     const loginService = new LoginService();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await taskService.GetAllTaskItem()
+                let res = response.filter(taskItem => taskItem.title.includes(search))
+                setData(res)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [search]);
+
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -34,7 +50,7 @@ const ColumnData = ({reload, onEdit}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await taskService.GetAllTaskItem()
+                let response = await taskService.GetAllTaskItem()
                 setData(response)
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -43,6 +59,8 @@ const ColumnData = ({reload, onEdit}) => {
             }
         };
         fetchData();
+
+
     }, [reload]);
     if (loading) return <p>Loading...</p>;
     data.sort((a, b) => Date.parse(a.deadline) - Date.parse(b.deadline));

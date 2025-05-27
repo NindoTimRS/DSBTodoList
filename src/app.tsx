@@ -4,6 +4,7 @@ import {useState} from "preact/hooks";
 import LoginForm from "./Login";
 import Dashboard from "./dashboard";
 import {getToken} from "./auth";
+import {Router} from "preact-router";
 
 const App = () => {
     const [isTokenValid, setIsTokenValid] = useState(false);

@@ -53,6 +53,14 @@ label {
   display: flex;
 }
 
+.visibleSearchDisplay {
+  display: none;
+}
+
+.visibleSearchDisplay:disabled {
+  display: flex;
+}
+
 .hidden {
   visibility: hidden;
 }
@@ -107,7 +115,7 @@ label {
 }
 
 
-.addTaskForm, .editTaskForm {
+.addTaskForm, .editTaskForm, .searchTaskForm {
   overflow-y: auto;
   align-self: center;
   justify-content: space-between;
@@ -254,6 +262,11 @@ label {
 
 @media screen and (min-width: 1170px) {
 
+  .searchTaskForm {
+    width: fit-content;
+    height: 60%;
+  }
+
   .editTaskForm {
     width: fit-content;
     height: 60%;
@@ -261,7 +274,7 @@ label {
   #editSubTaskForm {
     height: 50%;
   }
-  .editTaskForm, #addTaskForm {
+  .editTaskForm, #addTaskForm, #searchTaskForm {
     h3 {
       font-size: xxx-large;
     }
@@ -284,7 +297,7 @@ label {
     }
 
   }
-  .editTaskForm, #addTaskForm {
+  .editTaskForm, #addTaskForm, #searchTaskForm {
     h3 {
       font-size: xx-large;
     }

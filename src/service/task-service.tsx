@@ -10,7 +10,7 @@ export class TaskService{
             .then(res => {return res as TaskItem[]})
     }
 
-    async GetTaskItemById(taskId: string): Promise<TaskItem | null> {
+    async GetTaskItemById(taskId: string | number): Promise<TaskItem | null> {
         return await fetch(`${this.apiPath}/${taskId}`, {method: "GET", headers: {Authorization: `Bearer ${getToken()}`,}})
             .then(res => res.json())
             .then(res => {return res as TaskItem});
@@ -21,15 +21,15 @@ export class TaskService{
             .then(res => res.text())
     }
 
-    async PutTaskItem(taskId: string, body: string): Promise<string> {
+    async PutTaskItem(taskId: string | number, body: string): Promise<string> {
         return await fetch(`${this.apiPath}/${taskId}`, {method: "PUT", headers: {Authorization: `Bearer ${getToken()}`,}, body: body})
             .then(res => res.text())
     }
-    async DeleteTaskItem(taskId: string): Promise<string> {
+    async DeleteTaskItem(taskId: string | number): Promise<string> {
         return await fetch(`${this.apiPath}/${taskId}`, {method: "DELETE", headers: {Authorization: `Bearer ${getToken()}`,}})
             .then(res => res.text())
     }
-    async PatchTaskItem(taskId: number, body: string): Promise<string> {
+    async PatchTaskItem(taskId: string | number, body: string): Promise<string> {
         return await fetch(`${this.apiPath}/${taskId}`, {method: "PATCH", headers: {Authorization: `Bearer ${getToken()}`,}, body: body})
             .then(res => res.text())
     }

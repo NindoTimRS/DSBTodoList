@@ -14,7 +14,7 @@ import {DeadlineStyle, SelectPrioImage} from "./column-container";
 import EditSVG from "./icons/edit.svg"
 
 
-const EditTaskPopup = ({onPut, openEdit, taskItem, taskId}:{onPut: any, openEdit:any, taskItem: TaskItem, taskId:string}) => {
+const EditTaskPopup = ({onPut, openEdit, taskItem}:{onPut: any, openEdit:any, taskItem: TaskItem}) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState("");
@@ -23,30 +23,22 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, taskId}:{onPut: any, openEdit
     const [repeat, setRepeat] = useState(false);
     const [interval, setInterval] = useState(0);
 
-    useEffect(() => {
-            const fetchTask = async () => {
-                const taskService = new TaskService();
-                const task: TaskItem = await taskService.GetTaskItemById(taskId);
-                if (task){
-                 openEditTask(task);
-                }
-            };
-            fetchTask();
 
-    }, [taskId]);
 
     useEffect(() => {
         if (openEdit === null || !taskItem) return;
         const newUrl = new URL(window.location.href);
-        newUrl.searchParams.set('taskid', `${taskItem.task_id}`);
-        window.history.pushState({}, '', newUrl);
+        if (!newUrl.searchParams.get("taskid")){
+            newUrl.searchParams.set('taskid', `${taskItem.task_id}`);
+            window.history.pushState({}, '', newUrl);
+        }
        openEditTask(taskItem)
     }, [openEdit]);
 
     const openEditTask = (task: TaskItem) => {
         document.getElementById(popupStyles.editTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
         document.getElementById(columnStyles.columnGrid)!.classList.add(columnStyles.disabled);
-        const buttons = (document.getElementsByClassName(headerStyles.iconBtn)! as HTMLCollectionOf<HTMLButtonElement>)
+        const buttons = (document.getElementsByClassName(headerStyles.headInteractive)! as HTMLCollectionOf<HTMLButtonElement>)
         for (let i = 0; i < buttons.length; i++) {
             buttons[i].disabled = true;
         }
@@ -104,7 +96,7 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, taskId}:{onPut: any, openEdit
         window.history.pushState({}, '', newUrl.pathname);
         document.getElementById(popupStyles.editTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
         document.getElementById(columnStyles.columnGrid)!.classList.remove(columnStyles.disabled);
-        const buttons = (document.getElementsByClassName(headerStyles.iconBtn)! as HTMLCollectionOf<HTMLButtonElement>)
+        const buttons = (document.getElementsByClassName(headerStyles.headInteractive)! as HTMLCollectionOf<HTMLButtonElement>)
         for (let i = 0; i < buttons.length; i++) {
             buttons[i].disabled = false;
         }
@@ -125,7 +117,7 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, taskId}:{onPut: any, openEdit
         const subTaskService = new SubTaskService();
         const Status: { status: string } = {status: e.currentTarget.value}
         const body = JSON.stringify(Status);
-        const result = await subTaskService.PatchSubTaskItem(subTask.taskId, body);
+        await subTaskService.PatchSubTaskItem(subTask.taskId, body);
     };
 
     const PriorityAlt = (prio: number) => {

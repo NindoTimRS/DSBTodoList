@@ -4,9 +4,22 @@ import Logo from './icons/DSB_Logo.png';
 import LogoutSVG from './icons/logout.svg';
 import {logout} from "./auth";
 import {ToggleAddTaskFormHtml} from "./add-task-popup";
+import {useEffect, useState} from "preact/hooks";
+import { JSX } from 'preact/jsx-runtime';
 
 
-export default function Header() {
+export default function Header({onSearch}) {
+    const [searchInput, setSearchInput] = useState("");
+
+    const handleEnter = (e: JSX.TargetedKeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            setSearchInput(e.currentTarget.value);
+        }
+    }
+    useEffect(() => {
+        onSearch(searchInput);
+    }, [searchInput]);
+
     return (
         <header className={styles.header}>
             <div className={styles.left}>
@@ -14,9 +27,10 @@ export default function Header() {
                 <h1>Willkommen zurück!</h1>
             </div>
             <div className={styles.right}>
-                <button style={"visibility: hidden"} className={styles.iconBtn} title="Benachrichtigungen">🔔</button>
-                <button className={styles.iconBtn} title="Einstellungen" onClick={ToggleAddTaskFormHtml}>+ Add Task</button>
-                <button className={styles.iconBtn} title="Logout" onClick={logout}>
+                <input className={`${styles.searchField} ${styles.headInteractive}`} id={"searchField"} type="text" value={searchInput}
+                       onKeyPress={(e) => handleEnter(e)} />
+                <button className={`${styles.iconBtn} ${styles.headInteractive}`} title="Einstellungen" onClick={ToggleAddTaskFormHtml}>+ Add Task</button>
+                <button className={`${styles.iconBtn} ${styles.headInteractive}`} title="Logout" onClick={logout}>
                     <img src={LogoutSVG} alt="Logout" className={styles.logout} />
                 </button>
             </div>
