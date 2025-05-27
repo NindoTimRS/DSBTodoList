@@ -4,14 +4,16 @@ import {useState, useEffect} from 'preact/hooks';
 import {TaskService} from "./service/task-service";
 import {TaskItem} from "./Model/TaskItem";
 import EditSVG from "./icons/edit.svg"
-import {showEditTaskFormHtml} from "./edit-task-popup"
+import PrioLow from "./icons/low-priority.svg"
+import PrioMedium from "./icons/medium-priority.svg"
+import PrioHigh from "./icons/high-priority.svg"
 import {SubTaskItem} from "./Model/SubTaskItem";
 import {LoginService} from "./service/login-service";
 import { send } from 'emailjs-com';
 import styles from "./styles/coulumn.module.scss";
 
 
-const ColumnData = ({reload}) => {
+const ColumnData = ({reload, onEdit}) => {
     const [data, setData] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,6 +30,7 @@ const ColumnData = ({reload}) => {
         };
         fetchUsers();
     }, [reload]);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -49,14 +52,14 @@ const ColumnData = ({reload}) => {
 
     return (
         <div id={styles.columnGrid} class={`${styles.disabled}:disabled`}>
-            {Table(users, toDoData, "ToDo")}
-            {Table(users, inProgData, "InProgress")}
-            {Table(users, doneData, "Done")}
+            {Table(users, toDoData, "ToDo", onEdit)}
+            {Table(users, inProgData, "InProgress", onEdit)}
+            {Table(users, doneData, "Done", onEdit)}
         </div>
     );
 };
 
-function Table(users: { username: string, email: string }[], data: TaskItem[], status: string) {
+function Table(users: { username: string, email: string }[], data: TaskItem[], status: string, onEdit) {
     const divId = `${status.toLowerCase()}-column`;
     const ChangeAssignee = async (newUser: string, taskItem: TaskItem) => {
         const taskService = new TaskService();
@@ -109,7 +112,7 @@ function Table(users: { username: string, email: string }[], data: TaskItem[], s
                         </td>
                         <td class={styles.editCell}>
                             <img className={styles.tableImg} src={EditSVG} alt="Edit"
-                                 onClick={() => showEditTaskFormHtml(taskItem)}/>
+                                 onClick={() => onEdit(taskItem)}/>
                         </td>
                     </tr>
                 ))}
@@ -159,11 +162,11 @@ export function DeadlineStyle(taskItem: TaskItem | SubTaskItem): string {
 export function SelectPrioImage(prio: number): string {
     switch (prio) {
         case 1:
-            return "./src/icons/low-priority.svg";
+            return PrioLow;
         case 2:
-            return "./src/icons/medium-priority.svg";
+            return PrioMedium;
         case 3:
-            return "./src/icons/high-priority.svg";
+            return PrioHigh;
         default:
             return '';
     }

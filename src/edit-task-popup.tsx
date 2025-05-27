@@ -4,22 +4,73 @@ import {TaskService} from "./service/task-service";
 import trashBinImg from "./icons/trash-bin.svg"
 import {h} from "preact";
 import {SubTaskService} from "./service/subtask-service";
+import headerStyles from "./styles/header.module.scss"
+import columnStyles from "./styles/coulumn.module.scss"
+import popupStyles from "./styles/popup.module.scss"
+import {useEffect, useState} from "preact/hooks";
+import {SubTaskItem} from "./Model/SubTaskItem";
+import {TargetedEvent} from "react";
+import {DeadlineStyle, SelectPrioImage} from "./column-container";
+import EditSVG from "./icons/edit.svg"
 
-const EditTaskPopup = ({onPut}) => {
+
+const EditTaskPopup = ({onPut, openEdit, taskItem, taskId}:{onPut: any, openEdit:any, taskItem: TaskItem, taskId:string}) => {
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [status, setStatus] = useState("");
+    const [deadline, setDeadline] = useState("");
+    const [importance, setImportance] = useState("1");
+    const [repeat, setRepeat] = useState(false);
+    const [interval, setInterval] = useState(0);
+
+    useEffect(() => {
+            const fetchTask = async () => {
+                const taskService = new TaskService();
+                const task: TaskItem = await taskService.GetTaskItemById(taskId);
+                if (task){
+                 openEditTask(task);
+                }
+            };
+            fetchTask();
+
+    }, [taskId]);
+
+    useEffect(() => {
+        if (openEdit === null || !taskItem) return;
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set('taskid', `${taskItem.task_id}`);
+        window.history.pushState({}, '', newUrl);
+       openEditTask(taskItem)
+    }, [openEdit]);
+
+    const openEditTask = (task: TaskItem) => {
+        document.getElementById(popupStyles.editTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
+        document.getElementById(columnStyles.columnGrid)!.classList.add(columnStyles.disabled);
+        const buttons = (document.getElementsByClassName(headerStyles.iconBtn)! as HTMLCollectionOf<HTMLButtonElement>)
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].disabled = true;
+        }
+        document.getElementById("editTaskId")!.textContent = "Task ID: " + task.task_id
+        document.getElementById("editAssign")!.textContent = "Assignee: " + task.assignment
+        setTitle(task.title);
+        setDescription(task.description);
+        setStatus(task.status);
+        setDeadline(task.deadline);
+        setImportance(task.importance);
+        setRepeat(task.repeat);
+        setInterval(task.interval);
+    }
+
     let taskService = new TaskService();
     const putTask = async () => {
-        let repeat = false;
-        if (+(document.getElementById("editPriority") as HTMLInputElement).value > 0) {
-            repeat = true;
-        }
         const TaskItem: PostTaskItem = {
-            status: (document.getElementById("editStatus") as HTMLInputElement).value,
-            title: (document.getElementById("editTitle") as HTMLHeadElement).innerText,
-            description: (document.getElementById("editDescription") as HTMLInputElement).value,
-            deadline: (document.getElementById("editDeadline") as HTMLInputElement).value,
-            importance: +(document.getElementById("editPriority") as HTMLInputElement).value,
+            status: status,
+            title: title,
+            description: description,
+            deadline: deadline,
+            importance: +importance,
             repeat: repeat,
-            interval: +(document.getElementById("editPriority") as HTMLInputElement).value,
+            interval: interval,
             assignment: getAssigneeFromEditForm()[1]
         };
 
@@ -39,62 +90,150 @@ const EditTaskPopup = ({onPut}) => {
             onPut();
         }
     }
+    let subtasks: SubTaskItem[] | null;
+    try {
+        subtasks = taskItem.subTasks;
+        subtasks.sort((a, b) => Date.parse(a.deadline) - Date.parse(b.deadline));
+    }catch(err) {
+        subtasks = null;
+    }
+
+    const hideEditTaskFormHtml = () => {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('taskid');
+        window.history.pushState({}, '', newUrl.pathname);
+        document.getElementById(popupStyles.editTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
+        document.getElementById(columnStyles.columnGrid)!.classList.remove(columnStyles.disabled);
+        const buttons = (document.getElementsByClassName(headerStyles.iconBtn)! as HTMLCollectionOf<HTMLButtonElement>)
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].disabled = false;
+        }
+    }
+    const updateStatusStyles = (subTaskItem: SubTaskItem) => {
+        switch (subTaskItem.status) {
+            case "ToDo":
+                return popupStyles.subTaskToDO;
+            case "InProgress":
+                return popupStyles.subTaskInProgress;
+            case "Done":
+                return popupStyles.subTaskDone;
+        }
+    };
+
+    const handleStatusChange = async (subTask: SubTaskItem, e: TargetedEvent<HTMLSelectElement, Event>) => {
+        subTask.status = e.currentTarget.value as "ToDo"| "InProgress"| "Done"
+        const subTaskService = new SubTaskService();
+        const Status: { status: string } = {status: e.currentTarget.value}
+        const body = JSON.stringify(Status);
+        const result = await subTaskService.PatchSubTaskItem(subTask.taskId, body);
+    };
+
+    const PriorityAlt = (prio: number) => {
+        switch (prio) {
+            case 1:
+                return "ToDo";
+            case 2:
+                return "In Progress";
+            case 3:
+                return "Done";
+        }
+    }
+
+    const statuses = ["ToDo", "InProgress", "Done"];
 
     return (
-        <form id="editTaskForm" class="editTaskForm visibleDisplay" style="display:none" onSubmit={putTask}>
+        <form id={popupStyles.editTaskForm} class={`${popupStyles.editTaskForm} ${popupStyles.visibleDisplay}`} onSubmit={putTask}>
             <div>
-                <div id="editTaskFormHeader" class="editTaskFormHeader">
-                    <label id="editTaskId">Task Id</label>
-                    <label id="editAssign">Assigned for</label>
-                    <div class="topRightEdit">
-                        <button id="addSubTaskBtn">Add Sub-Task</button>
-                        <img src={trashBinImg} id="deleteTask" alt="Delete" width="35" height="35"
+                <div id={popupStyles.editTaskFormHeader} class={popupStyles.editTaskFormHeader}>
+                    <label id={"editTaskId"}>Task Id</label>
+                    <label id={"editAssign"}>Assigned for</label>
+                    <div class={popupStyles.topRightEdit}>
+                        <button id={popupStyles.addSubTaskBtn}>+ New Subtask</button>
+                        <img src={trashBinImg} id={popupStyles.deleteTask} alt="Delete" width="35" height="35"
                              onClick={deleteTask}></img>
                     </div>
                 </div>
 
-                <h3 id="editTitle" contenteditable="true">Task Title</h3>
+                <h3 id="editTitle" contenteditable
+                    onBlur={(e) => {setTitle(e.currentTarget.innerText)}} >
+                    {title}
+                </h3>
             </div>
-            <div class="taskFormBody">
+            <div class={popupStyles.taskFormBody}>
                 <label for="editDescription">Description</label>
-                <textarea class="editText" id="editDescription" rows={10} placeholder="Description" required></textarea>
+                <textarea class={popupStyles.editText} id={popupStyles.editDescription} rows={10} placeholder="Description"
+                          required onChange={(e) => {setDescription(e.currentTarget.value)}} value={description}>
+                </textarea>
                 <br></br>
                 <div class="editInputLine">
                     <div>
-                        <label for="editDeadline">Deadline</label>
-                        <input type="datetime-local" class="editText" id="editDeadline" required></input>
+                        <label class={popupStyles.editLabel} for="editDeadline">Deadline:</label>
+                        <input type="datetime-local" class={popupStyles.addInput} id="editDeadline" required
+                        onChange={(e) => {setDeadline(e.currentTarget.value)}} value={deadline}>
+                        </input>
                     </div>
                     <div>
-                        <label class="editLabel" for="editPriority">Priority:</label>
-                        <select class="addInput" id="editPriority" required>
+                        <label class={popupStyles.editLabel} for="editPriority">Priority:</label>
+                        <select class={popupStyles.addInput} id="editPriority" required
+                                onChange={(e) => {setImportance(e.currentTarget.value)}} value={importance}>
                             <option value="1">low</option>
                             <option value="2">medium</option>
                             <option value="3">high</option>
                         </select>
                     </div>
                     <div>
-                        <label class="editLabel" for="editStatus">Status:</label>
-                        <select class="addInput" id="editStatus" required>
+                        <label class={popupStyles.editLabel} for="editStatus">Status:</label>
+                        <select class={popupStyles.addInput} id="editStatus" required
+                                onChange={(e) => {setStatus(e.currentTarget.value)}} value={status}>
                             <option value="ToDo">To Do</option>
                             <option value="InProgress">In Progress</option>
                             <option value="Done">Done</option>
                         </select>
                     </div>
                     <div>
-                        <label class="editLabel" for="editRepeat">Repeating task?</label>
-                        <input class="addInput" type="checkbox" onChange={showEditRepeat} id="editRepeat"
-                               name="email"></input>
+                        <label class={popupStyles.editLabel} for="editRepeat">Repeating task?</label>
+                        <input class={popupStyles.addInput} type="checkbox" onChange={(e) => setRepeat(e.currentTarget.checked)} id="editRepeat"
+                               checked={repeat}></input>
                     </div>
-                    <div id="editRepeating" style="visibility: hidden;">
-                        <label class="editLabel" for="editInterval">Repeating in</label>
-                        <input class="addInput" type="number" id="editInterval" placeholder="0">
-                            <label for="editInterval">Days!</label></input>
+                    <div id="editRepeating" style={{
+                        visibility: repeat ? "visible" : "hidden",
+                        pointerEvents: repeat ? "auto" : "none"
+                    }}>
+                        <label class={popupStyles.editLabel} for="editInterval">Repeating in</label>
+                        <input class={popupStyles.addInput} type="number" id="editInterval" placeholder="0"></input>
+                        <label style={"padding-top: 20px"} for="editInterval">Days!</label>
                     </div>
                 </div>
                 <h4 style="text-align: center">Sub-Tasks</h4>
                 <div id="subtasks" style="display: flex; flex-direction: column">
                     <table id="subtaskTable" class="Task-Table">
                         <tbody>
+                        {subtasks == null ?
+                            <p>No subtasks yet!</p>
+                            :
+                            subtasks.map((subTaskItem) => (
+                                <tr style={"display: table-row; textAlignLast: center"}>
+                                    <td style={"width: 34%"}>{subTaskItem.title}</td>
+                                    <td style={"width: 34%"}>{DeadlineStyle(subTaskItem)}</td>
+
+                                    <td style={"width: 5%"}>
+                                        <img className={columnStyles.tableImg} src={SelectPrioImage(+subTaskItem.importance)} alt={`Priority: ${PriorityAlt(+subTaskItem.importance)}`} />
+                                    </td>
+
+                                    <td style={"width: 22%"}>
+                                        <select onChange={(e) => handleStatusChange(subTaskItem, e)}
+                                                className={`${popupStyles.subTaskStatusBox} ${updateStatusStyles(subTaskItem)} ${popupStyles.editImg}`} value={subTaskItem.status}>
+                                            {statuses.map((status) => (
+                                                <option value={status}/>
+                                            ))}
+                                        </select>
+                                    </td>
+
+                                    <td style={"width: 5%; display: inline-table"}>
+                                        <img className={columnStyles.tableImg} src={EditSVG} alt={"Edit"}/>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                     <br></br>
@@ -103,167 +242,13 @@ const EditTaskPopup = ({onPut}) => {
 
 
             </div>
-            <div class="confirmations">
-                <button class="submitButton" type="submit">Confirm Changes</button>
-                <button class="closeButton" type="button" onClick={hideEditTaskFormHtml}>Close</button>
+            <div class={popupStyles.confirmations}>
+                <button class={popupStyles.submitButton} type="submit">Confirm Changes</button>
+                <button class={popupStyles.closeButton} type="button" onClick={hideEditTaskFormHtml}>Close</button>
             </div>
         </form>
     );
 };
-
-
-function hideEditTaskFormHtml() {
-    document.getElementById("editTaskForm")!.style.display = "none";
-    document.getElementById('column-grid')!.classList.remove('disabled');
-    (document.getElementById('addButton')! as HTMLButtonElement).disabled = false;
-}
-
-export function showEditTaskFormHtml(taskItem: TaskItem) {
-    document.getElementById("editTaskForm")!.style.display = "flex";
-    document.getElementById('column-grid')!.classList.add('disabled');
-    (document.getElementById('addButton')! as HTMLButtonElement).disabled = true;
-    const originalTaskItem = taskItem;
-    document.getElementById("editTaskId")!.textContent = "Task ID: " + originalTaskItem.task_id
-    document.getElementById("editAssign")!.textContent = "Assignee: " + originalTaskItem.assignment
-    document.getElementById("editTitle")!.textContent = originalTaskItem.title;
-    document.getElementById("editDescription")!.textContent = originalTaskItem.description;
-    (document.getElementById("editStatus") as HTMLSelectElement)!.value = originalTaskItem.status;
-    (document.getElementById("editDeadline") as HTMLInputElement)!.value = originalTaskItem.deadline;
-    (document.getElementById("editPriority") as HTMLSelectElement)!.value = originalTaskItem.importance;
-    // (document.getElementById('addSubTaskBtn')! as HTMLButtonElement).onclick = () =>
-    //     this.SubAddPopup.showAddSubTaskFormHtml(originalTaskItem.task_id);
-    createSubTaskTable(originalTaskItem)
-}
-
-function createSubTaskTable(taskItem: TaskItem) {
-    const tableBody = document.getElementById("subtaskTable")?.getElementsByTagName('tbody')[0];
-    if (tableBody) {
-        tableBody.innerHTML = '';
-    }
-    if (taskItem.subTasks == null) {
-        const row = document.createElement('tr');
-        const titleCell = document.createElement('td');
-        titleCell.innerText = "No Subtasks yet";
-        row.appendChild(titleCell);
-        if (tableBody) {
-            tableBody.appendChild(row);
-        }
-    } else {
-        taskItem.subTasks.sort((a, b) => Date.parse(a.deadline) - Date.parse(b.deadline));
-        taskItem.subTasks.forEach(subTask => {
-            //const subEditPopup = new SubEditPopup(subTask);
-
-            const row = document.createElement('tr');
-            const titleCell = document.createElement('td');
-            const deadlineCell = document.createElement('td');
-            const importanceCell = document.createElement('td');
-            const statusCell = document.createElement('td');
-            const editCell = document.createElement('td');
-
-            const impImg = document.createElement('img');
-            const editImg = document.createElement('img');
-            const selectElement = document.createElement('select');
-            selectElement.className = 'subTaskStatusBox';
-            const statuses = ["ToDo", "InProgress", "Done"];
-            statuses.forEach(status => {
-                const option = document.createElement('option');
-                option.value = status;
-                option.textContent = status;
-                selectElement.appendChild(option);
-            });
-            selectElement.value = subTask.status;
-
-            const impNr = +subTask.importance;
-            switch (impNr) {
-                case 1:
-                    impImg.src = "./src/icons/low-priority.svg";
-                    break;
-                case 2:
-                    impImg.src = "./src/icons/medium-priority.svg";
-                    break;
-                case 3:
-                    impImg.src = "./src/icons/high-priority.svg";
-                    break;
-                default:
-                    impImg.alt = 'Err';
-            }
-            const updateStatusStyles = () => {
-                switch (selectElement.value) {
-                    case "ToDo":
-                        selectElement.style.color = 'lightgrey';
-                        selectElement.style.borderColor = 'lightgrey';
-                        subTask.status = "ToDo";
-                        break;
-                    case "InProgress":
-                        selectElement.style.color = 'aquamarine';
-                        selectElement.style.borderColor = 'aquamarine';
-                        subTask.status = "InProgress";
-                        break;
-                    case "Done":
-                        selectElement.style.color = 'green';
-                        selectElement.style.borderColor = 'green';
-                        subTask.status = "Done";
-                        break;
-                }
-            };
-
-            const patchStatus = async () => {
-                const subTaskService = new SubTaskService();
-                const Status: { status: string } = {status: selectElement.value}
-                const body = JSON.stringify(Status);
-                const result = await subTaskService.PatchSubTaskItem(subTask.taskId, body);
-                console.log(result);
-            }
-
-            updateStatusStyles();
-            selectElement.addEventListener('change', () => {
-                updateStatusStyles();
-                patchStatus();
-            });
-
-            statusCell.appendChild(selectElement);
-            impImg.className = 'tableImg';
-            importanceCell.appendChild(impImg);
-            editImg.className = 'tableImg';
-            editImg.style.cursor = 'pointer';
-            editImg.src = "./src/icons/edit.svg";
-            //editImg.onclick = function clickEdit() {subEditPopup.showEditSubTaskFormHtml()}
-            editCell.appendChild(editImg);
-
-
-            titleCell.textContent = subTask.title;
-            titleCell.style.width = '34%';
-
-            let date: string[] = subTask.deadline.split("-");
-            let deadline: string[] = [];
-            deadline.push(date[0]);
-            deadline.push(date[1]);
-            let day = date[2].split('T')
-            deadline.push(day[0]);
-            deadline.push(day[1]);
-
-            deadlineCell.textContent = `${deadline[2]}.${deadline[1]}.${deadline[0]} ${deadline[3]}`;
-            deadlineCell.style.width = '34%';
-            importanceCell.style.width = '5%';
-            editCell.style.width = '5%';
-            editCell.style.display = 'inline-table';
-
-
-            row.appendChild(titleCell);
-            row.appendChild(deadlineCell);
-            row.appendChild(importanceCell);
-            row.appendChild(statusCell);
-            row.appendChild(editCell);
-            row.style.display= 'table-row';
-            row.style.textAlignLast = 'center';
-
-            if (tableBody) {
-                tableBody.appendChild(row);
-            }
-        });
-    }
-}
-
 
 function getTaskIdFromEditForm(): string[] {
     const str = (document.getElementById("editTaskId") as HTMLLabelElement).innerText;
@@ -278,15 +263,6 @@ function getAssigneeFromEditForm(): string[] {
     const subStrings = str.split(": ", 2);
     console.log(subStrings);
     return subStrings;
-}
-
-function showEditRepeat() {
-    const repeat = document.getElementById('editRepeat') as HTMLInputElement;
-    if (repeat.checked) {
-        document.getElementById("editRepeating")!.style.visibility = "visible";
-    } else {
-        document.getElementById("editRepeating")!.style.visibility = "hidden";
-    }
 }
 
 export default EditTaskPopup;

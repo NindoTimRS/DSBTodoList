@@ -73,6 +73,11 @@ label {
 
     padding: 5px;
 
+    .editImg:hover {
+      cursor: pointer;
+      transform: scale(1.2);
+    }
+
     .subTaskStatusBox {
       display: inline-block;
       padding: 6px 12px;
@@ -82,6 +87,22 @@ label {
       font-size: 14px;
       text-align: center;
     }
+
+    .subTaskToDO {
+      color: white;
+      border-color: white;
+    }
+
+    .subTaskInProgress {
+      color: aquamarine;
+      border-color: aquamarine;
+    }
+
+    .subTaskDone {
+      color: green;
+      border-color: green;
+    }
+
   }
 }
 
@@ -100,7 +121,6 @@ label {
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.35);
   border-radius: 1rem;
   width: 100%;
-  max-width: 360px;
   text-align: center;
   border: 3px solid #ffb100;
 
@@ -121,6 +141,7 @@ label {
 
   .taskFormBody {
     .addInput {
+      z-index: 2;
       width: 60%;
       align-self: center;
       margin: 10px;
@@ -151,18 +172,21 @@ label {
 
       img:hover {
         cursor: pointer;
+        transform: scale(1.2);
       }
 
       button {
-        background: $InputContainerBG;
+        background: #1b1b1b;
         border: none;
         color: $FontColor;
-        border-bottom: #232C3D solid 1px;
+        border-bottom: #1c1c1c solid 1px;
         cursor: pointer;
+        margin-right: 5px;
       }
 
       button:hover {
-        background: $ContainerBG
+        transform: scale(1.1);
+        color: #ffb100;
       }
     }
   }
@@ -172,6 +196,8 @@ label {
 
     #editDescription, #editSubDescription {
       width: 100%;
+      background-color: #1b1b1b;
+      color: white;
     }
 
     div {
@@ -188,6 +214,7 @@ label {
       .editLabel {
         margin-left: 40px;
         min-width: fit-content;
+        padding-top: 20px;
       }
 
       #editInterval {
@@ -197,12 +224,13 @@ label {
   }
 }
 
+
+
 .addTaskForm {
   text-align: center;
-  min-width: 400px;
+  max-width: 360px;
 
   .addSubtaskHeader {
-    display: flex;
     flex-direction: row;
   }
 }
@@ -228,7 +256,7 @@ label {
 
   .editTaskForm {
     width: fit-content;
-    height: 80%;
+    height: 60%;
   }
   #editSubTaskForm {
     height: 50%;
