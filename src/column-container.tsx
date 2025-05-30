@@ -160,19 +160,23 @@ function SplitDate(inputDate: string): string[] {
 
 export function DeadlineStyle(taskItem: TaskItem | SubTaskItem): string {
     if (taskItem.status == "Done") {
-        return "deadlineCell";
+        return styles.deadlineCell;
     }
     const deadline = SplitDate(taskItem.deadline);
     const today = SplitDate(new Date().toISOString());
 
     if (+deadline[0] < +today[0]) {
         return styles.deadlineCellYesterday;
-    } else if (+deadline[1] < +today[1]) {
-        return styles.deadlineCellYesterday;
-    } else if (+deadline[2] < +today[2]) {
-        return styles.deadlineCellYesterday;
-    } else if (+deadline[2] == +today[2]) {
-        return styles.deadlineCellToday;
+    } else if (+deadline[0] == +today[0]) {
+        if (+deadline[1] < +today[1]) {
+            return styles.deadlineCellYesterday;
+        } else if (+deadline[1] == +today[1]) {
+            if (+deadline[2] < +today[2]) {
+                return styles.deadlineCellYesterday;
+            } else if (+deadline[2] == +today[2]) {
+                return styles.deadlineCellToday;
+            }
+        }
     }
     return styles.deadlineCell;
 }

@@ -1,4 +1,4 @@
-import {StateUpdater, useEffect, useState} from "preact/hooks";
+import {useEffect, useState} from "preact/hooks";
 import ColumnData from "./column-container"
 import Header from "./header";
 import AddTaskPopup from "./add-task-popup";
@@ -25,6 +25,23 @@ const Dashboard = () => {
             setTaskItem(taskItem);
         }
     }
+
+    useEffect( () => {
+        const newUrl = new URL(window.location.href);
+        const taskId = newUrl.searchParams.get("taskid");
+        if(taskId) {
+            const fetchData = async () => {
+                const service = new TaskService();
+                const task: TaskItem = await service.GetTaskItemById(taskId);
+                const singleTask: TaskItem = task[0];
+                handleOpenEdit(singleTask)
+            }
+
+            fetchData();
+
+        }
+
+    }, []);
 
     return (
         <div>
