@@ -1,10 +1,9 @@
 import { render } from 'preact';
 import './style.scss';
 import {useState} from "preact/hooks";
-import LoginForm from "./Login";
-import Dashboard from "./dashboard";
-import {getToken} from "./auth";
-import {Router} from "preact-router";
+import LoginForm from "./components/auth/Login";
+import Dashboard from "./components/dashboard";
+import {getToken} from "./components/auth/auth";
 
 const App = () => {
     const [isTokenValid, setIsTokenValid] = useState(false);

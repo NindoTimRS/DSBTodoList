@@ -1,5 +1,5 @@
 import {TaskItem} from "../Model/TaskItem";
-import {getToken} from "../auth";
+import {getToken} from "../components/auth/auth";
 
 export class TaskService{
     private apiPath = "http://localhost:6969/api/task";

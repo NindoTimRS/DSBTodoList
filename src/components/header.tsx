@@ -1,9 +1,9 @@
 
-import styles from './styles/header.module.scss';
-import Logo from './icons/DSB_Logo.png';
-import LogoutSVG from './icons/logout.svg';
-import {logout} from "./auth";
-import {ToggleAddTaskFormHtml} from "./add-task-popup";
+import styles from '../styles/header.module.scss';
+import Logo from '../icons/DSB_Logo.png';
+import LogoutSVG from '../icons/logout.svg';
+import {logout} from "./auth/auth";
+import {ToggleAddTaskFormHtml} from "./add-popups/add-task-popup";
 import {useEffect, useState} from "preact/hooks";
 import { JSX } from 'preact/jsx-runtime';
 

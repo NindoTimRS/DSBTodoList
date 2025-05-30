@@ -1,16 +1,16 @@
 import {h} from 'preact';
-import './style.scss';
+import '../style.scss';
 import {useState, useEffect} from 'preact/hooks';
-import {TaskService} from "./service/task-service";
-import {TaskItem} from "./Model/TaskItem";
-import EditSVG from "./icons/edit.svg"
-import PrioLow from "./icons/low-priority.svg"
-import PrioMedium from "./icons/medium-priority.svg"
-import PrioHigh from "./icons/high-priority.svg"
-import {SubTaskItem} from "./Model/SubTaskItem";
-import {LoginService} from "./service/login-service";
+import {TaskService} from "../service/task-service";
+import {TaskItem} from "../Model/TaskItem";
+import EditSVG from "../icons/edit.svg"
+import PrioLow from "../icons/low-priority.svg"
+import PrioMedium from "../icons/medium-priority.svg"
+import PrioHigh from "../icons/high-priority.svg"
+import {SubTaskItem} from "../Model/SubTaskItem";
+import {LoginService} from "../service/login-service";
 import { send } from 'emailjs-com';
-import styles from "./styles/coulumn.module.scss";
+import styles from "../styles/coulumn.module.scss";
 
 
 const ColumnData = ({reload, onEdit, search}) => {

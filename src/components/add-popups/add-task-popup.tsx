@@ -1,9 +1,9 @@
 
-import {PostTaskItem} from "./Model/PostTaskItem";
-import {TaskService} from "./service/task-service";
-import headerStyles from "./styles/header.module.scss"
-import columnStyles from "./styles/coulumn.module.scss"
-import popupStyles from "./styles/popup.module.scss"
+import {PostTaskItem} from "../../Model/PostTaskItem";
+import {TaskService} from "../../service/task-service";
+import headerStyles from "../../styles/header.module.scss"
+import columnStyles from "../../styles/coulumn.module.scss"
+import popupStyles from "../../styles/popup.module.scss"
 import {useState} from "preact/hooks";
 
 const AddTaskPopup = ({onPost}) => {
@@ -64,7 +64,7 @@ const AddTaskPopup = ({onPost}) => {
                     </div>
                     <br/>
                 </div>
-                <div className="confirmations">
+                <div className={popupStyles.confirmations}>
                     <button className={popupStyles.submitButton} type="submit">Submit</button>
                     <button className={popupStyles.closeButton} type="button" onClick={() => ClearAddForm(true)}>Close</button>
                 </div>
@@ -81,7 +81,7 @@ function changed() {
 function ClearAddForm(clearFrom: boolean) {
     ToggleAddTaskFormHtml();
     if (clearFrom) {
-        let inputs = document.getElementsByClassName("AddInput");
+        let inputs = document.getElementsByClassName(popupStyles.addInput);
         for (let input of inputs) {
             (input as HTMLInputElement).value = "";
             (input as HTMLInputElement).classList.remove(popupStyles.notFilled);

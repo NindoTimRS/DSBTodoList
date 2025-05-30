@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks'
 import { saveToken } from './auth'
-import styles from './styles/loginForm.module.scss'
+import styles from '../../styles/loginForm.module.scss'
 
 export default function LoginForm({ onLogin }: { onLogin: () => void }) {
     const apiPath = "http://localhost:6969/api/user";

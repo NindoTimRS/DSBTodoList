@@ -1,20 +1,20 @@
-import {TaskItem} from "./Model/TaskItem";
-import {PostTaskItem} from "./Model/PostTaskItem"
-import {TaskService} from "./service/task-service";
-import trashBinImg from "./icons/trash-bin.svg"
+import {TaskItem} from "../../Model/TaskItem";
+import {PostTaskItem} from "../../Model/PostTaskItem"
+import {TaskService} from "../../service/task-service";
+import trashBinImg from "../../icons/trash-bin.svg"
 import {h} from "preact";
-import {SubTaskService} from "./service/subtask-service";
-import headerStyles from "./styles/header.module.scss"
-import columnStyles from "./styles/coulumn.module.scss"
-import popupStyles from "./styles/popup.module.scss"
+import {SubTaskService} from "../../service/subtask-service";
+import headerStyles from "../../styles/header.module.scss"
+import columnStyles from "../../styles/coulumn.module.scss"
+import popupStyles from "../../styles/popup.module.scss"
 import {useEffect, useState} from "preact/hooks";
-import {SubTaskItem} from "./Model/SubTaskItem";
+import {SubTaskItem} from "../../Model/SubTaskItem";
 import {TargetedEvent} from "react";
-import {DeadlineStyle, SelectPrioImage} from "./column-container";
-import EditSVG from "./icons/edit.svg"
+import {FormatDate, SelectPrioImage} from "../column-container";
+import EditSVG from "../../icons/edit.svg"
 
 
-const EditTaskPopup = ({onPut, openEdit, taskItem}:{onPut: any, openEdit:any, taskItem: TaskItem}) => {
+const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEdit:any, taskItem: TaskItem, onSubAdd:any}) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState("");
@@ -101,24 +101,6 @@ const EditTaskPopup = ({onPut, openEdit, taskItem}:{onPut: any, openEdit:any, ta
             buttons[i].disabled = false;
         }
     }
-    const updateStatusStyles = (subTaskItem: SubTaskItem) => {
-        switch (subTaskItem.status) {
-            case "ToDo":
-                return popupStyles.subTaskToDO;
-            case "InProgress":
-                return popupStyles.subTaskInProgress;
-            case "Done":
-                return popupStyles.subTaskDone;
-        }
-    };
-
-    const handleStatusChange = async (subTask: SubTaskItem, e: TargetedEvent<HTMLSelectElement, Event>) => {
-        subTask.status = e.currentTarget.value as "ToDo"| "InProgress"| "Done"
-        const subTaskService = new SubTaskService();
-        const Status: { status: string } = {status: e.currentTarget.value}
-        const body = JSON.stringify(Status);
-        await subTaskService.PatchSubTaskItem(subTask.taskId, body);
-    };
 
     const PriorityAlt = (prio: number) => {
         switch (prio) {
@@ -131,8 +113,6 @@ const EditTaskPopup = ({onPut, openEdit, taskItem}:{onPut: any, openEdit:any, ta
         }
     }
 
-    const statuses = ["ToDo", "InProgress", "Done"];
-
     return (
         <form id={popupStyles.editTaskForm} class={`${popupStyles.editTaskForm} ${popupStyles.visibleDisplay}`} onSubmit={putTask}>
             <div>
@@ -140,7 +120,7 @@ const EditTaskPopup = ({onPut, openEdit, taskItem}:{onPut: any, openEdit:any, ta
                     <label id={"editTaskId"}>Task Id</label>
                     <label id={"editAssign"}>Assigned for</label>
                     <div class={popupStyles.topRightEdit}>
-                        <button id={popupStyles.addSubTaskBtn}>+ New Subtask</button>
+                        <button type="button" id={popupStyles.addSubTaskBtn} onClick={() => onSubAdd(taskItem.task_id)}>+ New Subtask</button>
                         <img src={trashBinImg} id={popupStyles.deleteTask} alt="Delete" width="35" height="35"
                              onClick={deleteTask}></img>
                     </div>
@@ -197,35 +177,61 @@ const EditTaskPopup = ({onPut, openEdit, taskItem}:{onPut: any, openEdit:any, ta
                     </div>
                 </div>
                 <h4 style="text-align: center">Sub-Tasks</h4>
-                <div id="subtasks" style="display: flex; flex-direction: column">
-                    <table id="subtaskTable" class="Task-Table">
+                <div id={popupStyles.subtasks} style="display: flex; flex-direction: column">
+                    <table id={popupStyles.subtaskTable} class="TaskTable">
                         <tbody>
                         {subtasks == null ?
                             <p>No subtasks yet!</p>
                             :
-                            subtasks.map((subTaskItem) => (
-                                <tr style={"display: table-row; textAlignLast: center"}>
-                                    <td style={"width: 34%"}>{subTaskItem.title}</td>
-                                    <td style={"width: 34%"}>{DeadlineStyle(subTaskItem)}</td>
+                            subtasks.map((subTaskItem) => {
+                                const [statusStyle, setStatusStyle] = useState<string>();
+                                const updateStatusStyles = (status: string) => {
+                                    switch (status) {
+                                        case "ToDo":
+                                            setStatusStyle(popupStyles.subTaskToDO)
+                                            break;
+                                        case "InProgress":
+                                            setStatusStyle(popupStyles.subTaskInProgress);
+                                            break;
+                                        case "Done":
+                                            setStatusStyle(popupStyles.subTaskDone);
+                                            break;
+                                    }
+                                    return statusStyle;
+                                };
+                                const handleStatusChange = async (subTask: SubTaskItem, e: TargetedEvent<HTMLSelectElement, Event>) => {
+                                    subTask.status = e.currentTarget.value as "ToDo"| "InProgress"| "Done"
+                                    const subTaskService = new SubTaskService();
+                                    const Status: { status: string } = {status: e.currentTarget.value}
+                                    const body = JSON.stringify(Status);
+                                    await subTaskService.PatchSubTaskItem(subTask.subTaskId, body);
+                                    updateStatusStyles(Status.status);
+                                };
 
-                                    <td style={"width: 5%"}>
-                                        <img className={columnStyles.tableImg} src={SelectPrioImage(+subTaskItem.importance)} alt={`Priority: ${PriorityAlt(+subTaskItem.importance)}`} />
-                                    </td>
+                                return (
+                                    <tr style={"display: table-row; textAlignLast: center;"}>
+                                        <td style={"width: 34%"}>{subTaskItem.title}</td>
+                                        <td style={`width: 34%`}>{FormatDate(subTaskItem.deadline)}</td>
 
-                                    <td style={"width: 22%"}>
-                                        <select onChange={(e) => handleStatusChange(subTaskItem, e)}
-                                                className={`${popupStyles.subTaskStatusBox} ${updateStatusStyles(subTaskItem)} ${popupStyles.editImg}`} value={subTaskItem.status}>
-                                            {statuses.map((status) => (
-                                                <option value={status}/>
-                                            ))}
-                                        </select>
-                                    </td>
+                                        <td style={"width: 5%"}>
+                                            <img className={columnStyles.tableImg} src={SelectPrioImage(+subTaskItem.importance)} alt={`Priority: ${PriorityAlt(+subTaskItem.importance)}`} />
+                                        </td>
 
-                                    <td style={"width: 5%; display: inline-table"}>
-                                        <img className={columnStyles.tableImg} src={EditSVG} alt={"Edit"}/>
-                                    </td>
-                                </tr>
-                            ))}
+                                        <td style={"width: 22%"}>
+                                            <select onChange={(e) => handleStatusChange(subTaskItem, e)}
+                                                    className={`${popupStyles.subTaskStatusBox} ${statusStyle ? statusStyle : updateStatusStyles(subTaskItem.status)} `} value={subTaskItem.status}>
+                                                <option style={"color: white"} value="ToDo">To Do</option>
+                                                <option style={"color: aquamarine"} value="InProgress">In Progress</option>
+                                                <option style={"color: green"} value="Done">Done</option>
+                                            </select>
+                                        </td>
+
+                                        <td style={"width: 5%; display: inline-table"}>
+                                            <img className={columnStyles.tableImg} src={EditSVG} alt={"Edit"}/>
+                                        </td>
+                                    </tr>
+                                )
+                            })}
                         </tbody>
                     </table>
                     <br></br>

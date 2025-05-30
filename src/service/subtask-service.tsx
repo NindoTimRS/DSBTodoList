@@ -1,10 +1,9 @@
-import {TaskItem} from "../Model/TaskItem";
-import {getToken} from "../auth";
+import {getToken} from "../components/auth/auth";
 
 export class SubTaskService {
     private apiPath = "http://localhost:6969/api/subtask";
     async PostSubTaskItem(body: string): Promise<string> {
-        return await fetch(this.apiPath, {method: "POST", body: body})
+        return await fetch(this.apiPath, {method: "POST", headers: {Authorization: `Bearer ${getToken()}`}, body: body})
             .then(res => res.text())
     }
 
