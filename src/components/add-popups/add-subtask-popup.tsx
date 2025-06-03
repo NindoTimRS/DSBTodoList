@@ -2,6 +2,7 @@ import popupStyles from "../../styles/popup.module.scss"
 import {useState, useEffect} from "preact/hooks";
 import {PostSubTaskItem} from "../../Model/PostSubTaskItem";
 import {SubTaskService} from "../../service/subtask-service";
+import headerStyles from "../../styles/header.module.scss";
 
 
 const AddSubTaskPopup = ({taskId, openSubAdd}:{openSubAdd:any, taskId: number}) => {

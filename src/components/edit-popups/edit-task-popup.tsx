@@ -12,6 +12,8 @@ import {SubTaskItem} from "../../Model/SubTaskItem";
 import {TargetedEvent} from "react";
 import {FormatDate, SelectPrioImage} from "../column-container";
 import EditSVG from "../../icons/edit.svg"
+import styles from "../../styles/header.module.scss";
+import {timeout} from "rxjs";
 
 
 const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEdit:any, taskItem: TaskItem, onSubAdd:any}) => {
@@ -36,21 +38,24 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEd
     }, [openEdit]);
 
     const openEditTask = (task: TaskItem) => {
-        document.getElementById(popupStyles.editTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
-        document.getElementById(columnStyles.columnGrid)!.classList.add(columnStyles.disabled);
-        const buttons = (document.getElementsByClassName(headerStyles.headInteractive)! as HTMLCollectionOf<HTMLButtonElement>)
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].disabled = true;
-        }
-        document.getElementById("editTaskId")!.textContent = "Task ID: " + task.task_id
-        document.getElementById("editAssign")!.textContent = "Assignee: " + task.assignment
-        setTitle(task.title);
-        setDescription(task.description);
-        setStatus(task.status);
-        setDeadline(task.deadline);
-        setImportance(task.importance);
-        setRepeat(task.repeat);
-        setInterval(task.interval);
+        setTimeout(() => {
+            document.getElementById(popupStyles.editTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
+            document.getElementById(columnStyles.columnGrid)!.classList.add(columnStyles.disabled);
+            document.getElementById(headerStyles.header)!.classList.toggle(headerStyles.active);
+            const buttons = (document.getElementsByClassName(headerStyles.headInteractive)! as HTMLCollectionOf<HTMLButtonElement>)
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = true;
+            }
+            document.getElementById("editTaskId")!.textContent = "Task ID: " + task.task_id
+            document.getElementById("editAssign")!.textContent = "Assignee: " + task.assignment
+            setTitle(task.title);
+            setDescription(task.description);
+            setStatus(task.status);
+            setDeadline(task.deadline);
+            setImportance(task.importance);
+            setRepeat(task.repeat);
+            setInterval(task.interval);
+        }, 100);
     }
 
     let taskService = new TaskService();
@@ -96,6 +101,7 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEd
         window.history.pushState({}, '', newUrl.pathname);
         document.getElementById(popupStyles.editTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
         document.getElementById(columnStyles.columnGrid)!.classList.remove(columnStyles.disabled);
+        document.getElementById(headerStyles.header)!.classList.toggle(headerStyles.active);
         const buttons = (document.getElementsByClassName(headerStyles.headInteractive)! as HTMLCollectionOf<HTMLButtonElement>)
         for (let i = 0; i < buttons.length; i++) {
             buttons[i].disabled = false;
@@ -120,7 +126,9 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEd
                     <label id={"editTaskId"}>Task Id</label>
                     <label id={"editAssign"}>Assigned for</label>
                     <div class={popupStyles.topRightEdit}>
-                        <button type="button" id={popupStyles.addSubTaskBtn} onClick={() => onSubAdd(taskItem.task_id)}>+ New Subtask</button>
+                        <button type="button" id={popupStyles.addSubTaskBtn} onClick={() => onSubAdd(taskItem.task_id)}>
+                            <span className={popupStyles.desktopOnly}> + </span><span className={headerStyles.desktopOnly}>Add Subtask</span>
+                        </button>
                         <img src={trashBinImg} id={popupStyles.deleteTask} alt="Delete" width="35" height="35"
                              onClick={deleteTask}></img>
                     </div>

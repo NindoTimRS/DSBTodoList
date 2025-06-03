@@ -1,3 +1,6 @@
+@use "sass:color";
+@import "mixins";
+
 $AllBG: #232C3D;
 $ContainerBG: #2F3A4F;
 $InputContainerBG: #262F40;
@@ -11,7 +14,7 @@ $CloseGreyHover: #5a6268;
 $FontColor: white;
 $FontcolorDivisions: rgb(255, 255, 255);
 $FontSizeButtons: 18px;
-@use "sass:color";
+
 
 textarea {
   resize: none;
@@ -127,7 +130,7 @@ label {
 }
 
 
-.addTaskForm, .editTaskForm, .searchTaskForm {
+.addTaskForm, .editTaskForm {
   overflow-y: auto;
   align-self: center;
   justify-content: space-between;
@@ -149,6 +152,11 @@ label {
       background: linear-gradient(to right, #ffb100, #ff3c00);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      font-size: xxx-large;
+
+      @include mobile {
+        font-size: xx-large;
+      }
     }
 
     display: flex;
@@ -160,9 +168,16 @@ label {
   }
 
   .taskFormBody {
+    font-size: large;
+
+    @include mobile {
+      font-size: large;
+    }
+
     .addInput, .AddSubInput {
+      font-size: large;
       z-index: 2;
-      width: 60%;
+      width: 90%;
       align-self: center;
       margin: 10px;
       background: #1b1b1b;
@@ -181,6 +196,19 @@ label {
 }
 
 .editTaskForm {
+  width: fit-content;
+  height: 60%;
+
+  @include mobile {
+    height: 85%;
+    width: 100%;
+  }
+
+  @include desktop-HD {
+    height: 85%;
+    width: 70%;
+  }
+
   .editTaskFormHeader {
     flex-direction: row;
     display: flex;
@@ -214,14 +242,26 @@ label {
   .taskFormBody {
     align-items: start;
 
+    @include mobile {
+      align-items: center;
+    }
+
     #editDescription, #editSubDescription {
       width: 100%;
       background-color: #1b1b1b;
       color: white;
+
+      @include mobile {
+        width: 90%;
+      }
     }
 
     div {
       flex-direction: row;
+
+      @include mobile {
+        flex-direction: column;
+      }
 
       input, select {
         margin-top: unset;
@@ -235,6 +275,10 @@ label {
         margin-left: 40px;
         min-width: fit-content;
         padding-top: 20px;
+
+        @include desktop-HD {
+          padding-top: 10px;
+        }
       }
 
       #editInterval {
@@ -244,79 +288,51 @@ label {
   }
 }
 
+.desktopOnly {
 
+  @include mobile {
+    font-size: 2rem;
+  }
+}
 
 .addTaskForm {
   text-align: center;
   max-width: 360px;
 
+  @include desktop-HD {
+    height: 91%;
+  }
+
   .addSubtaskHeader {
     flex-direction: row;
+  }
+  .addInput, .AddSubInput {
+
+    @include mobile {
+      font-size: large;
+    }
   }
 }
 
 #addSubTaskForm {
   background: $ContainerBG;
 
+
   .TaskFormBody {
     .addInput, .AddSubInput {
       background: $ContainerBG;
-    }
-  }
-}
 
-#editSubTaskForm {
-  .confirmations {
-    display: contents;
-  }
-}
-
-
-@media screen and (min-width: 1170px) {
-
-  .searchTaskForm {
-    width: fit-content;
-    height: 60%;
-  }
-
-  .editTaskForm {
-    width: fit-content;
-    height: 60%;
-  }
-  #editSubTaskForm {
-    height: 50%;
-  }
-  .editTaskForm, #addTaskForm, #searchTaskForm {
-    h3 {
-      font-size: xxx-large;
-    }
-
-    .taskFormBody {
-      font-size: large;
-
-      .addInput, .AddSubInput {
+      @include mobile {
         font-size: large;
       }
     }
   }
 }
 
-@media screen and (max-width: 1169px) {
+#editSubTaskForm {
+  height: 50%;
 
-  #addTaskForm {
-    .addInput, .AddSubInput {
-      font-size: large;
-    }
-
-  }
-  .editTaskForm, #addTaskForm, #searchTaskForm {
-    h3 {
-      font-size: xx-large;
-    }
-
-    .taskFormBody {
-      font-size: large;
-
-    }
+  .confirmations {
+    display: contents;
   }
 }

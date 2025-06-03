@@ -92,6 +92,7 @@ function ClearAddForm(clearFrom: boolean) {
 export function ToggleAddTaskFormHtml() {
     document.getElementById(popupStyles.addTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
     document.getElementById(columnStyles.columnGrid)!.classList.toggle(columnStyles.disabled);
+    document.getElementById(headerStyles.header)!.classList.toggle(headerStyles.active);
     const buttons = (document.getElementsByClassName(headerStyles.headInteractive)! as HTMLCollectionOf<HTMLButtonElement>)
     for (let i = 0; i < buttons.length; i++) {
         buttons[i].disabled = !buttons[i].disabled;

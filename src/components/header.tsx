@@ -21,15 +21,17 @@ export default function Header({onSearch}) {
     }, [searchInput]);
 
     return (
-        <header className={styles.header}>
+        <header id={`${styles.header}`} className={styles.active}>
             <div className={styles.left}>
                 <img src={Logo} alt="DSB Logo" className={styles.logo}/>
-                <h1>Willkommen zurück!</h1>
+                <h1 className={styles.desktopOnly}>Willkommen zurück!</h1>
             </div>
             <div className={styles.right}>
-                <input className={`${styles.searchField} ${styles.headInteractive}`} id={"searchField"} type="text" value={searchInput}
+                <input  className={`${styles.searchField} ${styles.headInteractive}`} id={"searchField"} type="text" value={searchInput}
                        onKeyPress={(e) => handleEnter(e)} />
-                <button className={`${styles.iconBtn} ${styles.headInteractive}`} title="Einstellungen" onClick={ToggleAddTaskFormHtml}>+ Add Task</button>
+                <button className={`${styles.iconBtn} ${styles.headInteractive}`} title="Einstellungen" onClick={ToggleAddTaskFormHtml}>
+                   <span> + </span><span class={styles.desktopOnly}>Add Task</span>
+                </button>
                 <button className={`${styles.iconBtn} ${styles.headInteractive}`} title="Logout" onClick={logout}>
                     <img src={LogoutSVG} alt="Logout" className={styles.logout} />
                 </button>

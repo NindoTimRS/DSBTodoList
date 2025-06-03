@@ -12,6 +12,7 @@ $FontColor: white;
 $FontcolorDivisions: rgb(255, 255, 255);
 $FontSizeButtons: 18px;
 @use "sass:color";
+@import "mixins";
 
 
 .disabled {
@@ -25,18 +26,35 @@ $FontSizeButtons: 18px;
 
 }
 
-
-
 #columnGrid {
   gap: 24px;
   margin-right: 15px;
   margin-left: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  @include mobile {
+    gap: unset;
+    display: flex;
+    font-size: medium;
+    flex-direction: column;
+    margin-right: 3px;
+    margin-left: 3px;
+  }
 
   .column {
     margin-top: 24px;
     background: #1b1b1b;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 3px solid #ffb100;
+
+    @include mobile {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+      overflow: auto;
+    }
 
     h2 {
       margin-bottom: 16px;
@@ -68,6 +86,10 @@ $FontSizeButtons: 18px;
       tr {
         display: table-row;
 
+        @include mobile {
+
+        }
+
         td {
           padding: 12px 16px;
           text-align: center;
@@ -76,7 +98,8 @@ $FontSizeButtons: 18px;
 
         .assignmentCell {
           width: 15%;
-          select{
+
+          select {
             display: inline-block;
             padding: 6px 12px;
             border: 2px solid;
@@ -85,12 +108,18 @@ $FontSizeButtons: 18px;
             background: #1b1b1b;
             color: $FontColor;
             text-align: center;
-            option{
+
+            @include mobile {
+              display: none;
+            }
+
+            option {
               background: black;
               color: $FontColor;
               text-align: center;
             }
-            &:hover{
+
+            &:hover {
               cursor: pointer;
               transform: scale(1.05);
             }
@@ -99,20 +128,36 @@ $FontSizeButtons: 18px;
 
         .titleCell {
           width: 45%;
+
+          @include mobile {
+            width: 50%;
+          }
         }
 
         .deadlineCell {
           width: 30%;
+
+          @include mobile {
+            width: 40%;
+          }
         }
 
         .deadlineCellYesterday {
           width: 30%;
           color: red;
+
+          @include mobile {
+            width: 40%;
+          }
         }
 
         .deadlineCellToday {
           width: 30%;
           color: yellow;
+
+          @include mobile {
+            width: 40%;
+          }
         }
 
         .importanceCell {
@@ -133,28 +178,6 @@ $FontSizeButtons: 18px;
         background: #2b2b2b;
 
       }
-    }
-  }
-}
-
-@media screen and (min-width: 1170px) {
-
-  #columnGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media screen and (max-width: 1169px) {
-
-  #column-grid {
-    display: flex;
-    font-size: medium;
-    flex-direction: column;
-
-    .column {
-      display: flex;
-      flex-direction: column;
     }
   }
 }

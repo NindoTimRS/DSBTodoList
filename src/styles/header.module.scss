@@ -1,6 +1,13 @@
-// header.module.scss
 @use "sass:color";
-.header {
+@import "mixins";
+
+.active {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+#header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -18,6 +25,9 @@
     height: 80px;
     margin-right: 1rem;
 
+    @include mobile {
+      height: 60px;
+    }
   }
 
   h1 {
@@ -26,12 +36,34 @@
     background: linear-gradient(to right, #ffb100, #ff3c00);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+    @include mobile {
+      font-size: 1.2rem;
+    }
   }
 }
 
 .right {
   display: flex;
-  gap: 1rem;
+  gap: .8rem;
+}
+
+.mobileOnly {
+
+  @include desktop-4k {
+    display: none;
+  }
+
+  @include desktop-HD {
+    display: none;
+  }
+}
+
+.desktopOnly {
+
+  @include mobile {
+    display: none;
+  }
 }
 
 .searchField {
@@ -39,6 +71,10 @@
   border-color: white;
   font-size: 1.3rem;
   color: white;
+
+  @include mobile {
+    font-size: 1rem;
+  }
 }
 
 .iconBtn {
