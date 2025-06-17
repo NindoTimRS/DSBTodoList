@@ -171,17 +171,18 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEd
                         </select>
                     </div>
                     <div>
-                        <label class={popupStyles.editLabel} for="editRepeat">Repeating task?</label>
-                        <input class={popupStyles.addInput} type="checkbox" onChange={(e) => setRepeat(e.currentTarget.checked)} id="editRepeat"
+                        <label className={popupStyles.editLabel} htmlFor="editRepeat">Repeating task?</label>
+                        <input class={popupStyles.addInput} type="checkbox"
+                               onChange={(e) => setRepeat(e.currentTarget.checked)} id="editRepeat"
                                checked={repeat}></input>
                     </div>
                     <div id="editRepeating" style={{
                         visibility: repeat ? "visible" : "hidden",
                         pointerEvents: repeat ? "auto" : "none"
                     }}>
-                        <label class={popupStyles.editLabel} for="editInterval">Repeating in</label>
+                        <label className={popupStyles.editLabel} htmlFor="editInterval">Repeating in</label>
                         <input class={popupStyles.addInput} type="number" id="editInterval" placeholder="0"></input>
-                        <label style={"padding-top: 20px"} for="editInterval">Days!</label>
+                        <label style={"padding-top: 20px"} htmlFor="editInterval">Days!</label>
                     </div>
                 </div>
                 <h4 style="text-align: center">Sub-Tasks</h4>
@@ -218,7 +219,7 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEd
 
                                 return (
                                     <tr style={"display: table-row; textAlignLast: center;"}>
-                                        <td style={"width: 34%"}>{subTaskItem.title}</td>
+                                        <td style={"width: 34%"} onTouchEnd={() => {console.log("touch end")}}>{subTaskItem.title}</td>
                                         <td style={`width: 34%`}>{FormatDate(subTaskItem.deadline)}</td>
 
                                         <td style={"width: 5%"}>
@@ -234,7 +235,7 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEd
                                             </select>
                                         </td>
 
-                                        <td style={"width: 5%; display: inline-table"}>
+                                        <td class={popupStyles.subTableEdit}>
                                             <img className={columnStyles.tableImg} src={EditSVG} alt={"Edit"}/>
                                         </td>
                                     </tr>

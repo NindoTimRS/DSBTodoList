@@ -78,6 +78,11 @@ label {
   overflow-y: auto;
   border: 1px solid white;
 
+  @include mobile {
+    max-height: 30vw;
+    font-size: 80%;
+  }
+
   #subtaskTable {
     table-layout: fixed;
     width: 100%;
@@ -99,6 +104,11 @@ label {
       font-weight: bold;
       font-size: 14px;
       text-align: center;
+
+      @include mobile {
+        font-size: 12px;
+        width: 1%;
+      }
 
       &:hover {
         cursor: pointer;
@@ -126,6 +136,15 @@ label {
 
     }
 
+  }
+
+  .subTableEdit {
+    width: 5%;
+    display: inline-table;
+
+    @include mobile {
+      display: none;
+    }
   }
 }
 
@@ -306,6 +325,7 @@ label {
   .addSubtaskHeader {
     flex-direction: row;
   }
+
   .addInput, .AddSubInput {
 
     @include mobile {
