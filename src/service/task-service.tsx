@@ -10,10 +10,19 @@ export class TaskService{
             .then(res => {return res as TaskItem[]})
     }
 
-    async GetTaskItemById(taskId: string | number): Promise<TaskItem | null> {
-        return await fetch(`${this.apiPath}/${taskId}`, {method: "GET", headers: {Authorization: `Bearer ${getToken()}`,}})
-            .then(res => res.json())
-            .then(res => {return res as TaskItem});
+    async GetTaskItemById(taskId: string | number): Promise<TaskItem | string> {
+        try {
+            return await fetch(`${this.apiPath}/${taskId}`, {method: "GET", headers: {Authorization: `Bearer ${getToken()}`,}})
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(res.status.toString());
+                    }
+                    res.json();
+                })
+                .then(res => {return res as unknown as TaskItem});
+        } catch (error) {
+            return error.message;
+        }
     }
 
     async PostTaskItem(body: string): Promise<string> {

@@ -148,8 +148,7 @@ label {
   }
 }
 
-
-.addTaskForm, .editTaskForm {
+.addTaskForm, .editTaskForm, .taskForm404 {
   overflow-y: auto;
   align-self: center;
   justify-content: space-between;
@@ -214,7 +213,7 @@ label {
   }
 }
 
-.editTaskForm {
+.editTaskForm, .taskForm404 {
   width: fit-content;
   height: 60%;
 

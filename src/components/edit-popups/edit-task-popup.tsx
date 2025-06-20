@@ -12,8 +12,6 @@ import {SubTaskItem} from "../../Model/SubTaskItem";
 import {TargetedEvent} from "react";
 import {FormatDate, SelectPrioImage} from "../column-container";
 import EditSVG from "../../icons/edit.svg"
-import styles from "../../styles/header.module.scss";
-import {timeout} from "rxjs";
 
 
 const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEdit:any, taskItem: TaskItem, onSubAdd:any}) => {
@@ -181,7 +179,9 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEd
                         pointerEvents: repeat ? "auto" : "none"
                     }}>
                         <label className={popupStyles.editLabel} htmlFor="editInterval">Repeating in</label>
-                        <input class={popupStyles.addInput} type="number" id="editInterval" placeholder="0"></input>
+                        <input class={popupStyles.addInput} type="number" id="editInterval" placeholder="0"
+                               onChange={(e) => {setInterval(+e.currentTarget.value)}} value={interval}>
+                        </input>
                         <label style={"padding-top: 20px"} htmlFor="editInterval">Days!</label>
                     </div>
                 </div>

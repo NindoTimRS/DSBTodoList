@@ -13,7 +13,7 @@ import { send } from 'emailjs-com';
 import styles from "../styles/coulumn.module.scss";
 
 
-const ColumnData = ({reload, onEdit, search}) => {
+const ColumnData = ({reload, onEdit, search, onPut}) => {
     const [data, setData] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -51,6 +51,19 @@ const ColumnData = ({reload, onEdit, search}) => {
         const fetchData = async () => {
             try {
                 let response = await taskService.GetAllTaskItem()
+                let change = false;
+                for (let i = 0;i < response.length; i++){
+
+                    if (refreshRepeat(response[i])) {
+                        change = true;
+                    }
+
+                }
+
+                if (change) {
+                    onPut();
+                }
+
                 setData(response)
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -59,7 +72,6 @@ const ColumnData = ({reload, onEdit, search}) => {
             }
         };
         fetchData();
-
 
     }, [reload]);
     if (loading) return <p>Loading...</p>;
@@ -76,6 +88,53 @@ const ColumnData = ({reload, onEdit, search}) => {
         </div>
     );
 };
+
+function refreshRepeat(taskItem: TaskItem) {
+    let change: boolean = false;
+    if (taskItem.repeat) {
+        const deadline: string[] = SplitDate(taskItem.deadline);
+        const today: string[] = SplitDate(new Date().toISOString());
+        const deadlineDue = () => {
+
+            if (+deadline[0] < +today[0]) {
+                return true;
+            } else if (+deadline[0] == +today[0]) {
+                if (+deadline[1] < +today[1]) {
+                    return true;
+                } else if (+deadline[1] == +today[1]) {
+                    if (+deadline[2] < +today[2]) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        if (taskItem.status == "Done" || deadlineDue()) {
+            taskItem.status = "ToDo";
+            const date = new Date(taskItem.deadline);
+            date.setDate(date.getDate() + taskItem.interval);
+            taskItem.deadline = toDatetimeLocalString(date);
+
+            const putTask = async () => {
+                let taskService = new TaskService();
+                const body = JSON.stringify(taskItem);
+                await taskService.PutTaskItem(taskItem.task_id, body);
+
+            }
+            putTask();
+            change = true;
+        }
+    }
+    return change;
+}
+
+function toDatetimeLocalString(date: Date) {
+    const pad = n => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 
 function Table(users: { username: string, email: string }[], data: TaskItem[], status: string, onEdit) {
     const divId = `${status.toLowerCase()}-column`;
