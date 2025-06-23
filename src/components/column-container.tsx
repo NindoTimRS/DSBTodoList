@@ -24,7 +24,7 @@ const ColumnData = ({reload, onEdit, search, onPut}) => {
         const fetchData = async () => {
             try {
                 const response = await taskService.GetAllTaskItem()
-                let res = response.filter(taskItem => taskItem.title.includes(search))
+                let res = response.filter(taskItem => taskItem.title.toLowerCase().includes(search.toLowerCase()));
                 setData(res)
             } catch (error) {
                 console.error('Error fetching data:', error);

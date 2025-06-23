@@ -48,12 +48,12 @@ const Dashboard = () => {
             const fetchData = async () => {
                 const service = new TaskService();
                 const task: TaskItem | string = await service.GetTaskItemById(taskId);
-                if ( task == "404"){
+                if ( typeof task === "string" ){
                     if (open404 === null)
                         setOpen404(true);
                     else
                         setOpen404(!open404);
-                } else if (typeof task !== "string") {
+                } else {
                     const singleTask: TaskItem = task[0];
                     handleOpenEdit(singleTask)
                 }

@@ -1,5 +1,6 @@
 import {TaskItem} from "../Model/TaskItem";
 import {getToken} from "../components/auth/auth";
+import {catchError} from "rxjs";
 
 export class TaskService{
     private apiPath = "http://localhost:6969/api/task";
@@ -13,13 +14,8 @@ export class TaskService{
     async GetTaskItemById(taskId: string | number): Promise<TaskItem | string> {
         try {
             return await fetch(`${this.apiPath}/${taskId}`, {method: "GET", headers: {Authorization: `Bearer ${getToken()}`,}})
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error(res.status.toString());
-                    }
-                    res.json();
-                })
-                .then(res => {return res as unknown as TaskItem});
+                .then(res => res.json())
+                .then(res => {return res as TaskItem})
         } catch (error) {
             return error.message;
         }
