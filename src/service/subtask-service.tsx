@@ -16,7 +16,7 @@ export class SubTaskService {
             .then(res => res.text())
     }
 
-    async PatchSubTaskItem(taskId: number, body: string): Promise<string> {
+    async PatchSubTaskItem(taskId: number | string, body: string): Promise<string> {
         return await fetch(`${this.apiPath}/${taskId}`, {method: "PATCH", headers: {Authorization: `Bearer ${getToken()}`,}, body: body})
             .then(res => res.text())
     }

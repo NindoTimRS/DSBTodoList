@@ -3,10 +3,12 @@ import ColumnData from "./column-container"
 import Header from "./header";
 import AddTaskPopup from "./add-popups/add-task-popup";
 import EditTaskPopup from "./edit-popups/edit-task-popup";
+import EditSubTaskPopup from "./edit-popups/edit-subtask-popup";
 import AddSubTaskPopup from "./add-popups/add-subtask-popup"
 import {TaskItem} from "../Model/TaskItem";
 import {TaskService} from "../service/task-service";
 import EditTaskPopup404 from "./edit-popups/404-edit-task-popup";
+import {SubTaskItem} from "../Model/SubTaskItem";
 
 
 
@@ -19,6 +21,8 @@ const Dashboard = () => {
     const [editTaskItem, setEditTaskItem] = useState<TaskItem>();
     const [addSubId, setAddSubId] = useState<number>(0);
     const [openSubAdd, setOpenSubAdd] = useState<boolean | null>(null);
+    const [editSubTaskItem, setEditSubTaskItem] = useState<SubTaskItem>();
+    const [openSubEdit, setOpenSubEdit] = useState<boolean | null>(null);
     const [search, setSearch] = useState<string>('');
 
     const handleOpenSubAdd = (taskId?: number) => {
@@ -28,6 +32,16 @@ const Dashboard = () => {
             setOpenSubAdd(!openEdit);
         if (taskId) {
             setAddSubId(taskId);
+        }
+    }
+
+    const handleOpenSubEdit = (subTaskItem?: SubTaskItem) => {
+        if (openSubEdit === null)
+            setOpenSubEdit(true);
+        else
+            setOpenSubEdit(!openEdit);
+        if (subTaskItem) {
+            setEditSubTaskItem(subTaskItem);
         }
     }
 
@@ -71,9 +85,11 @@ const Dashboard = () => {
             <Header onSearch={(searchInput: string) => setSearch(searchInput)} />
             <ColumnData onPut={() => setReload(!reload)} reload={reload} onEdit={(taskItem: TaskItem) => handleOpenEdit(taskItem)} search={search}></ColumnData>
             <AddTaskPopup onPost={() => setReload(!reload)}></AddTaskPopup>
-            <EditTaskPopup onPut={() => setReload(!reload)} taskItem={editTaskItem!} openEdit={openEdit} onSubAdd={(taskId: number) => handleOpenSubAdd(taskId)}></EditTaskPopup>
+            <EditTaskPopup onPut={() => setReload(!reload)} taskItem={editTaskItem!} openEdit={openEdit}
+                           onSubAdd={(taskId: number) => handleOpenSubAdd(taskId)} onSubEdit={(subTaskItem: SubTaskItem) => handleOpenSubEdit(subTaskItem)}></EditTaskPopup>
             <EditTaskPopup404 open404={open404}></EditTaskPopup404>
             <AddSubTaskPopup taskId={addSubId} openSubAdd={openSubAdd}></AddSubTaskPopup>
+            <EditSubTaskPopup subTaskItem={editSubTaskItem!} openSubEdit={openSubEdit}></EditSubTaskPopup>
 
         </div>
     );

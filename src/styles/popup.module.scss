@@ -145,10 +145,15 @@ label {
     @include mobile {
       display: none;
     }
+
+    &:hover {
+      cursor: pointer;
+      transform: scale(1.2);
+    }
   }
 }
 
-.addTaskForm, .editTaskForm, .taskForm404 {
+.addTaskForm, .editTaskForm, .taskForm404, .editSubTaskForm {
   overflow-y: auto;
   align-self: center;
   justify-content: space-between;
@@ -213,7 +218,7 @@ label {
   }
 }
 
-.editTaskForm, .taskForm404 {
+.editTaskForm, .taskForm404, .editSubTaskForm {
   width: fit-content;
   height: 60%;
 
@@ -227,7 +232,7 @@ label {
     width: 70%;
   }
 
-  .editTaskFormHeader {
+  .editTaskFormHeader, .editSubTaskFormHeader {
     flex-direction: row;
     display: flex;
     justify-content: space-between;

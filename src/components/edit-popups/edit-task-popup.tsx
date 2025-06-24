@@ -14,7 +14,7 @@ import {FormatDate, SelectPrioImage} from "../column-container";
 import EditSVG from "../../icons/edit.svg"
 
 
-const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEdit:any, taskItem: TaskItem, onSubAdd:any}) => {
+const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd, onSubEdit}:{onPut: any, openEdit:any, taskItem: TaskItem, onSubAdd: any, onSubEdit: any}) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState("");
@@ -219,7 +219,7 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEd
 
                                 return (
                                     <tr style={"display: table-row; textAlignLast: center;"}>
-                                        <td style={"width: 34%"} onTouchEnd={() => {console.log("touch end")}}>{subTaskItem.title}</td>
+                                        <td style={"width: 34%"} onTouchEnd={() => {onSubEdit(subTaskItem)}}>{subTaskItem.title}</td>
                                         <td style={`width: 34%`}>{FormatDate(subTaskItem.deadline)}</td>
 
                                         <td style={"width: 5%"}>
@@ -236,7 +236,7 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd}:{onPut: any, openEd
                                         </td>
 
                                         <td class={popupStyles.subTableEdit}>
-                                            <img className={columnStyles.tableImg} src={EditSVG} alt={"Edit"}/>
+                                            <img className={columnStyles.tableImg} src={EditSVG} alt={"Edit"} onClick={() => onSubEdit(subTaskItem)}/>
                                         </td>
                                     </tr>
                                 )
