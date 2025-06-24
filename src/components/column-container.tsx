@@ -39,6 +39,7 @@ const ColumnData = ({reload, onEdit, search, onPut}) => {
         const fetchUsers = async () => {
             try {
                 const response = await loginService.GetAllUser()
+                console.log(response)
                 setUsers(response)
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -142,22 +143,21 @@ function Table(users: { username: string, email: string }[], data: TaskItem[], s
         const taskService = new TaskService();
         const Assignee: { assignment: string } = {assignment: newUser}
         const body = JSON.stringify(Assignee);
-        const result = await taskService.PatchTaskItem(taskItem.task_id, body);
-        console.log(result);
-        const time = new Date().toString()
-        const user: {username: string, email: string}  = users.find(value => value.username == newUser)
-        const mail: {email: string, message: string, title: string ,time: string}  = {email: user.email, message: `Hello ${user.username},\n You were assigned to Task: ${taskItem.title}`,title: "new Task assigned!", time: time}
-        send(
-            'service_7129gpv',
-            'template_r5nh7fn',
-            mail,
-            'vXvzOYepe0YqRtvLG'
-        ).then((response) => {
-            console.log('SUCCESS!', response.status, response.text);
-        })
-            .catch((err) => {
-                console.log('FAILED...', err);
-            });
+        await taskService.PatchTaskItem(taskItem.task_id, body);
+        // const time = new Date().toString()
+        // const user: {username: string, email: string}  = users.find(value => value.username == newUser)
+        // const mail: {email: string, message: string, title: string ,time: string}  = {email: user.email, message: `Hello ${user.username},\n You were assigned to Task: ${taskItem.title}`,title: "new Task assigned!", time: time}
+        // send(
+        //     'service_7129gpv',
+        //     'template_r5nh7fn',
+        //     mail,
+        //     'vXvzOYepe0YqRtvLG'
+        // ).then((response) => {
+        //     console.log('SUCCESS!', response.status, response.text);
+        // })
+        //     .catch((err) => {
+        //         console.log('FAILED...', err);
+        //     });
     }
 
     return (
