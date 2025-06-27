@@ -9,8 +9,8 @@ import PrioMedium from "../icons/medium-priority.svg"
 import PrioHigh from "../icons/high-priority.svg"
 import {SubTaskItem} from "../Model/SubTaskItem";
 import {LoginService} from "../service/login-service";
-import { send } from 'emailjs-com';
 import styles from "../styles/coulumn.module.scss";
+import {DiscordService} from "../service/discord-service";
 
 
 const ColumnData = ({reload, onEdit, search, onPut}) => {
@@ -144,20 +144,7 @@ function Table(users: { username: string, email: string }[], data: TaskItem[], s
         const Assignee: { assignment: string } = {assignment: newUser}
         const body = JSON.stringify(Assignee);
         await taskService.PatchTaskItem(taskItem.task_id, body);
-        // const time = new Date().toString()
-        // const user: {username: string, email: string}  = users.find(value => value.username == newUser)
-        // const mail: {email: string, message: string, title: string ,time: string}  = {email: user.email, message: `Hello ${user.username},\n You were assigned to Task: ${taskItem.title}`,title: "new Task assigned!", time: time}
-        // send(
-        //     'service_7129gpv',
-        //     'template_r5nh7fn',
-        //     mail,
-        //     'vXvzOYepe0YqRtvLG'
-        // ).then((response) => {
-        //     console.log('SUCCESS!', response.status, response.text);
-        // })
-        //     .catch((err) => {
-        //         console.log('FAILED...', err);
-        //     });
+        await sendDiscordMessage(users, newUser, taskItem)
     }
 
     return (
@@ -202,6 +189,17 @@ function Table(users: { username: string, email: string }[], data: TaskItem[], s
 export function FormatDate(inputDate: string): string {
     const deadline = SplitDate(inputDate);
     return `${deadline[2]}.${deadline[1]}.${deadline[0]} ${deadline[3]}:${deadline[4]}`;
+}
+
+async function sendDiscordMessage(users: { username: string; email: string }[], newUser: string, taskItem: TaskItem) {
+    const user: {username: string, email: string}  = users.find(value => value.username == newUser)
+    let newUrl = new URL(window.location.href);
+    if (!newUrl.searchParams.get("taskid")){
+        newUrl.pathname = newUrl.pathname + "taskid=" + taskItem.task_id;
+    }
+    const content = `<@${user.email}> Dir wurde eine Aufgabe zugewiesen!\n\n### ${taskItem.title}\nDeadline: ${DeadlineStyle(taskItem)}\n\nMehr Informationen: ${newUrl.pathname}`
+    const discordService = new DiscordService();
+    await discordService.PostDiscordMessage(content);
 }
 
 function SplitDate(inputDate: string): string[] {
