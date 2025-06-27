@@ -12,9 +12,10 @@ import {SubTaskItem} from "../../Model/SubTaskItem";
 import {TargetedEvent} from "react";
 import {FormatDate, SelectPrioImage} from "../column-container";
 import EditSVG from "../../icons/edit.svg"
+import {TOAST_TYPE} from "../../Model/toast";
 
 
-const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd, onSubEdit}:{onPut: any, openEdit:any, taskItem: TaskItem, onSubAdd: any, onSubEdit: any}) => {
+const EditTaskPopup = ({onToast, onPut, openEdit, taskItem, onSubAdd, onSubEdit}:{onToast:any, onPut: any, openEdit:any, taskItem: TaskItem, onSubAdd: any, onSubEdit: any}) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState("");
@@ -213,8 +214,13 @@ const EditTaskPopup = ({onPut, openEdit, taskItem, onSubAdd, onSubEdit}:{onPut: 
                                     const subTaskService = new SubTaskService();
                                     const Status: { status: string } = {status: e.currentTarget.value}
                                     const body = JSON.stringify(Status);
-                                    await subTaskService.PatchSubTaskItem(subTask.subTaskId, body);
-                                    updateStatusStyles(Status.status);
+                                    const res = await subTaskService.PatchSubTaskItem(subTask.subTaskId, body);
+                                    if (res.status < 400) {
+                                        updateStatusStyles(Status.status);
+                                        onToast({toastType: TOAST_TYPE.SUCCESS, msg: (`Status wurde auf ${Status.status} gesetzt`)});
+                                    } else {
+                                        onToast({toastType: TOAST_TYPE.ERROR, msg: (`Der Status konnte nicht angepasst werden`)});
+                                    }
                                 };
 
                                 return (

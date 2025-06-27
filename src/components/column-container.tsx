@@ -11,9 +11,10 @@ import {SubTaskItem} from "../Model/SubTaskItem";
 import {LoginService} from "../service/login-service";
 import styles from "../styles/coulumn.module.scss";
 import {DiscordService} from "../service/discord-service";
+import {TOAST_TYPE} from "../Model/toast";
 
 
-const ColumnData = ({reload, onEdit, search, onPut}) => {
+const ColumnData = ({reload, onEdit, search, onPut, onToast}) => {
     const [data, setData] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -83,9 +84,9 @@ const ColumnData = ({reload, onEdit, search, onPut}) => {
 
     return (
         <div id={styles.columnGrid} class={`${styles.disabled}:disabled`}>
-            {Table(users, toDoData, "ToDo", onEdit)}
-            {Table(users, inProgData, "InProgress", onEdit)}
-            {Table(users, doneData, "Done", onEdit)}
+            {Table(users, toDoData, "ToDo", onEdit, onToast)}
+            {Table(users, inProgData, "InProgress", onEdit, onToast)}
+            {Table(users, doneData, "Done", onEdit, onToast)}
         </div>
     );
 };
@@ -137,14 +138,24 @@ function toDatetimeLocalString(date: Date) {
 }
 
 
-function Table(users: { username: string, email: string }[], data: TaskItem[], status: string, onEdit) {
+function Table(users: { username: string, email: string }[], data: TaskItem[], status: string, onEdit, onToast) {
     const divId = `${status.toLowerCase()}-column`;
     const ChangeAssignee = async (newUser: string, taskItem: TaskItem) => {
         const taskService = new TaskService();
         const Assignee: { assignment: string } = {assignment: newUser}
         const body = JSON.stringify(Assignee);
-        await taskService.PatchTaskItem(taskItem.task_id, body);
-        await sendDiscordMessage(users, newUser, taskItem)
+        const resPatch = await taskService.PatchTaskItem(taskItem.task_id, body);
+        if (resPatch.status < 400){
+            const resDis = await sendDiscordMessage(users, newUser, taskItem)
+            if (resDis.status < 400) {
+                onToast({toastType: TOAST_TYPE.SUCCESS, msg: (`Aufgabe wurde ${newUser} zugewiesen`)});
+            }else {
+                onToast({toastType: TOAST_TYPE.WARN, msg: (`Es konnte keine Nachricht an ${newUser} gesendet werden!`)});
+            }
+        } else {
+            onToast({toastType: TOAST_TYPE.ERROR, msg: (`Aufgabe konnte ${newUser} nicht zugewiesen werden!`)});
+        }
+
     }
 
     return (
@@ -199,7 +210,7 @@ async function sendDiscordMessage(users: { username: string; email: string }[], 
     }
     const content = `<@${user.email}> Dir wurde eine Aufgabe zugewiesen!\n\n### ${taskItem.title}\nDeadline: ${DeadlineStyle(taskItem)}\n\nMehr Informationen: ${newUrl.pathname}`
     const discordService = new DiscordService();
-    await discordService.PostDiscordMessage(content);
+    return await discordService.PostDiscordMessage(content);
 }
 
 function SplitDate(inputDate: string): string[] {

@@ -34,8 +34,20 @@ export class TaskService{
         return await fetch(`${this.apiPath}/${taskId}`, {method: "DELETE", headers: {Authorization: `Bearer ${getToken()}`,}})
             .then(res => res.text())
     }
-    async PatchTaskItem(taskId: string | number, body: string): Promise<string> {
-        return await fetch(`${this.apiPath}/${taskId}`, {method: "PATCH", headers: {Authorization: `Bearer ${getToken()}`,}, body: body})
-            .then(res => res.text())
+    async PatchTaskItem(taskId: string | number, body: string): Promise<{ status: number; body: string }> {
+        const res = await fetch(`${this.apiPath}/${taskId}`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+            body: body,
+        });
+
+        const text = await res.text();
+
+        return {
+            status: res.status,
+            body: text,
+        };
     }
 }

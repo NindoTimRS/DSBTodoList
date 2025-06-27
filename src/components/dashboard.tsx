@@ -9,12 +9,14 @@ import {TaskItem} from "../Model/TaskItem";
 import {TaskService} from "../service/task-service";
 import EditTaskPopup404 from "./edit-popups/404-edit-task-popup";
 import {SubTaskItem} from "../Model/SubTaskItem";
+import ToastElement from "./toast-element";
+import {Toast} from "../Model/toast";
 
 
 
 
 const Dashboard = () => {
-
+    const [toast, setToast] = useState<Toast | null>(null);
     const [reload, setReload] = useState(false);
     const [openEdit, setOpenEdit] = useState<boolean | null>(null);
     const [open404, setOpen404] = useState<boolean | null>(null);
@@ -83,13 +85,14 @@ const Dashboard = () => {
     return (
         <div>
             <Header onSearch={(searchInput: string) => setSearch(searchInput)} />
-            <ColumnData onPut={() => setReload(!reload)} reload={reload} onEdit={(taskItem: TaskItem) => handleOpenEdit(taskItem)} search={search}></ColumnData>
+            <ColumnData onToast={(toast: Toast) => setToast(toast)} onPut={() => setReload(!reload)} reload={reload} onEdit={(taskItem: TaskItem) => handleOpenEdit(taskItem)} search={search}></ColumnData>
             <AddTaskPopup onPost={() => setReload(!reload)}></AddTaskPopup>
-            <EditTaskPopup onPut={() => setReload(!reload)} taskItem={editTaskItem!} openEdit={openEdit}
+            <EditTaskPopup onToast={(toast: Toast) => setToast(toast)} onPut={() => setReload(!reload)} taskItem={editTaskItem!} openEdit={openEdit}
                            onSubAdd={(taskId: number) => handleOpenSubAdd(taskId)} onSubEdit={(subTaskItem: SubTaskItem) => handleOpenSubEdit(subTaskItem)}></EditTaskPopup>
             <EditTaskPopup404 open404={open404}></EditTaskPopup404>
             <AddSubTaskPopup taskId={addSubId} openSubAdd={openSubAdd}></AddSubTaskPopup>
-            <EditSubTaskPopup subTaskItem={editSubTaskItem!} openSubEdit={openSubEdit}></EditSubTaskPopup>
+            <EditSubTaskPopup onToast={(toast: Toast) => setToast(toast)} subTaskItem={editSubTaskItem!} openSubEdit={openSubEdit}></EditSubTaskPopup>
+            <ToastElement toast={toast} />
 
         </div>
     );

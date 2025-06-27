@@ -1,0 +1,60 @@
+#toastContainer {
+  position: fixed;
+  z-index: 10000;
+  right: 20px;
+  bottom: 30px;
+}
+
+.toast {
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  min-width: 250px;
+  background-color: grey;
+  color: white;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  margin: 10px;
+}
+
+.success {
+  background-color: green;
+  color: black;
+}
+
+.info {
+  background-color: blue;
+  color: black;
+}
+
+.warning {
+  background-color: yellow;
+  color: black;
+}
+
+.error {
+  background-color: red;
+  color: black;
+}
+
+/* Animations to fade the toastr in and out */
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}

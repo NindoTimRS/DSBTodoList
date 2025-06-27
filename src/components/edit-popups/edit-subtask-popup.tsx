@@ -5,8 +5,9 @@ import trashBinImg from "../../icons/trash-bin.svg";
 import {h} from "preact";
 import {SubTaskService} from "../../service/subtask-service";
 import {PostSubTaskItem} from "../../Model/PostSubTaskItem";
+import {TOAST_TYPE} from "../../Model/toast";
 
-const EditSubTaskPopup = ({subTaskItem, openSubEdit}:{openSubEdit:any, subTaskItem: SubTaskItem}) => {
+const EditSubTaskPopup = ({onToast, subTaskItem, openSubEdit}:{onToast:any, openSubEdit:any, subTaskItem: SubTaskItem}) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState("");
@@ -55,9 +56,13 @@ const EditSubTaskPopup = ({subTaskItem, openSubEdit}:{openSubEdit:any, subTaskIt
     const deleteSubTask = async () => {
         if (confirm("Are you sure you want to delete this task?")) {
             const subStrings = getIdFromEditForm("editSubSubTaskId");
-            await subTaskService.DeleteSubTaskItem(subStrings[1]);
-            ToggleEditSubTaskFormHtml(false);
-
+            const res = await subTaskService.DeleteSubTaskItem(subStrings[1]);
+            if (res.status < 400) {
+                onToast({toastType: TOAST_TYPE.SUCCESS, msg: (`Die Subtask wurde gelöscht`)});
+                ToggleEditSubTaskFormHtml(false);
+            } else {
+                onToast({toastType: TOAST_TYPE.ERROR, msg: (`Die Subtask konnte nicht gelöscht werden.`)});
+            }
         }
     }
 
