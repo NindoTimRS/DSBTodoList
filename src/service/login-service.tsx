@@ -10,10 +10,10 @@ export class LoginService{
         }
         throw new Error(`Login failed: ${response.status} ${response.statusText}`);
     }
-    async GetAllUser(): Promise<{userName: string, email: string}[]> {
+    async GetAllUser(): Promise<{userId: number, userName: string, email: string}[]> {
         return await fetch(`${this.apiPath}/all`, {method: "GET", headers: {Authorization: `Bearer ${getToken()}`}})
             .then(res => res.json())
-            .then(res => {return res as {userName: string, email: string}[]});
+            .then(res => {return res as {userId: number, userName: string, email: string}[]});
     }
 
 }

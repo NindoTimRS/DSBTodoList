@@ -40,7 +40,6 @@ const ColumnData = ({reload, onEdit, search, onPut, onToast}) => {
         const fetchUsers = async () => {
             try {
                 const response = await loginService.GetAllUser()
-                console.log(response)
                 setUsers(response)
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -138,7 +137,7 @@ function toDatetimeLocalString(date: Date) {
 }
 
 
-function Table(users: { username: string, email: string }[], data: TaskItem[], status: string, onEdit, onToast) {
+function Table(users: {userId: number, username: string, email: string }[], data: TaskItem[], status: string, onEdit, onToast) {
     const divId = `${status.toLowerCase()}-column`;
     const ChangeAssignee = async (newUser: string, taskItem: TaskItem) => {
         const taskService = new TaskService();
