@@ -12,7 +12,7 @@ import {LoginService} from "../service/login-service";
 import styles from "../styles/coulumn.module.scss";
 import {DiscordService} from "../service/discord-service";
 import {TOAST_TYPE} from "../Model/toast";
-
+import {DiscordWebhook, Embed, Field} from "../Model/DiscordWebhook"
 
 const ColumnData = ({reload, onEdit, search, onPut, onToast}) => {
     const [data, setData] = useState([]);
@@ -139,6 +139,7 @@ function toDatetimeLocalString(date: Date) {
 
 function Table(users: {userId: number, username: string, email: string }[], data: TaskItem[], status: string, onEdit, onToast) {
     const divId = `${status.toLowerCase()}-column`;
+
     const ChangeAssignee = async (newUser: string, taskItem: TaskItem) => {
         const taskService = new TaskService();
         const Assignee: { assignment: string } = {assignment: newUser}
@@ -204,12 +205,42 @@ export function FormatDate(inputDate: string): string {
 async function sendDiscordMessage(users: { username: string; email: string }[], newUser: string, taskItem: TaskItem) {
     const user: {username: string, email: string}  = users.find(value => value.username == newUser)
     let newUrl = new URL(window.location.href);
+    let finalURL = "";
+
     if (!newUrl.searchParams.get("taskid")){
-        newUrl.pathname = newUrl.pathname + "taskid=" + taskItem.task_id;
+
+        if (newUrl.href.includes("?")){
+            finalURL = newUrl.href + "taskid=" + taskItem.task_id;
+        }else {
+            finalURL = newUrl.href + "?taskid=" + taskItem.task_id;
+        }
+
+    }else {
+        finalURL = newUrl.href;
     }
-    const content = `<@${user.email}> Dir wurde eine Aufgabe zugewiesen!\n\n### ${taskItem.title}\nDeadline: ${DeadlineStyle(taskItem)}\n\nMehr Informationen: ${newUrl.pathname}`
+
+    const field: Field = {
+        name: "Deadline:",
+        value: FormatDate(taskItem.deadline),
+        inline: true
+    }
+
+    const embed: Embed = {
+        title: taskItem.title,
+        url: finalURL,
+        description: taskItem.description,
+        color: 15258703,
+        fields: [field]
+    }
+
+    const payload: DiscordWebhook = {
+        content: `<@${user.email}> Dir wurde eine Aufgabe zugewiesen!`,
+        embeds: [embed]
+    }
+
+    const body = JSON.stringify(payload)
     const discordService = new DiscordService();
-    return await discordService.PostDiscordMessage(content);
+    return await discordService.PostDiscordMessage(body);
 }
 
 function SplitDate(inputDate: string): string[] {
