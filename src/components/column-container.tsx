@@ -137,7 +137,7 @@ function toDatetimeLocalString(date: Date) {
 }
 
 
-function Table(users: {userId: number, username: string, email: string }[], data: TaskItem[], status: string, onEdit, onToast) {
+function Table(users: {userId: number, username: string, group: string, email: string }[], data: TaskItem[], status: string, onEdit, onToast) {
     const divId = `${status.toLowerCase()}-column`;
 
     const ChangeAssignee = async (newUser: string, taskItem: TaskItem) => {
@@ -145,13 +145,22 @@ function Table(users: {userId: number, username: string, email: string }[], data
         const Assignee: { assignment: string } = {assignment: newUser}
         const body = JSON.stringify(Assignee);
         const resPatch = await taskService.PatchTaskItem(taskItem.task_id, body);
+
         if (resPatch.status < 400){
             const resDis = await sendDiscordMessage(users, newUser, taskItem)
-            if (resDis.status < 400) {
-                onToast({toastType: TOAST_TYPE.SUCCESS, msg: (`Aufgabe wurde ${newUser} zugewiesen`)});
-            }else {
-                onToast({toastType: TOAST_TYPE.WARN, msg: (`Es konnte keine Nachricht an ${newUser} gesendet werden!`)});
+
+            if (resDis) {
+
+                if (resDis.status < 400) {
+                    onToast({toastType: TOAST_TYPE.SUCCESS, msg: (`Aufgabe wurde ${newUser} zugewiesen`)});
+                } else {
+                    onToast({toastType: TOAST_TYPE.WARN, msg: (`Es konnte keine Nachricht an ${newUser} gesendet werden!`)});
+                }
+
+            } else {
+                onToast({toastType: TOAST_TYPE.INFO, msg: (`Zuweisung wurde entfernt!`)})
             }
+            
         } else {
             onToast({toastType: TOAST_TYPE.ERROR, msg: (`Aufgabe konnte ${newUser} nicht zugewiesen werden!`)});
         }
@@ -204,6 +213,9 @@ export function FormatDate(inputDate: string): string {
 
 async function sendDiscordMessage(users: { username: string; email: string }[], newUser: string, taskItem: TaskItem) {
     const user: {username: string, email: string}  = users.find(value => value.username == newUser)
+    if (!user) {
+     return null
+    }
     let newUrl = new URL(window.location.href);
     let finalURL = "";
 
