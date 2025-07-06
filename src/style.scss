@@ -1,4 +1,4 @@
-
+@import "/src/styles/mixins.scss";
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -24,7 +24,7 @@ html, body, #app {
 
 body {
   overflow-y: auto;
-  min-width: 400px;
+  min-width: 350px;
   background-color: #ffffff;
   color: white;
   font-size: 18px;

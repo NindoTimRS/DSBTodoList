@@ -73,6 +73,7 @@
   color: white;
 
   @include mobile {
+    width: 6rem;
     font-size: 1rem;
   }
 }
