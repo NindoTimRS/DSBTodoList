@@ -42,6 +42,7 @@ label {
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 5px;
+  color: black;
 }
 
 .closeButton:hover {
@@ -321,6 +322,10 @@ label {
 .addTaskForm {
   text-align: center;
   max-width: 360px;
+
+  @include mobile {
+    max-height: 95vh;
+  }
 
   @include desktop-HD {
     height: 91%;

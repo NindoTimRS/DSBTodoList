@@ -4,6 +4,7 @@ import {TaskService} from "../../service/task-service";
 import headerStyles from "../../styles/header.module.scss"
 import columnStyles from "../../styles/coulumn.module.scss"
 import popupStyles from "../../styles/popup.module.scss"
+import "../../style.scss"
 import {useState} from "preact/hooks";
 
 const AddTaskPopup = ({onPost}) => {
@@ -90,6 +91,7 @@ function ClearAddForm(clearFrom: boolean) {
 }
 
 export function ToggleAddTaskFormHtml() {
+    document.body.classList.toggle('overflowHidden');
     document.getElementById(popupStyles.addTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
     document.getElementById(columnStyles.columnGrid)!.classList.toggle(columnStyles.disabled);
     document.getElementById(headerStyles.header)!.classList.toggle(headerStyles.active);

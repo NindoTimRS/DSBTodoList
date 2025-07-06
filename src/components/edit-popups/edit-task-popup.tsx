@@ -39,6 +39,7 @@ const EditTaskPopup = ({onToast, onPut, openEdit, taskItem, onSubAdd, onSubEdit}
     const openEditTask = (task: TaskItem) => {
         setTimeout(() => {
             document.getElementById(popupStyles.editTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
+            document.body.classList.toggle('overflowHidden');
             document.getElementById(columnStyles.columnGrid)!.classList.add(columnStyles.disabled);
             document.getElementById(headerStyles.header)!.classList.toggle(headerStyles.active);
             const buttons = (document.getElementsByClassName(headerStyles.headInteractive)! as HTMLCollectionOf<HTMLButtonElement>)
@@ -98,6 +99,7 @@ const EditTaskPopup = ({onToast, onPut, openEdit, taskItem, onSubAdd, onSubEdit}
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.delete('taskid');
         window.history.pushState({}, '', newUrl.pathname);
+        document.body.classList.toggle('overflowHidden');
         document.getElementById(popupStyles.editTaskForm)!.classList.toggle(popupStyles.visibleDisplay);
         document.getElementById(columnStyles.columnGrid)!.classList.remove(columnStyles.disabled);
         document.getElementById(headerStyles.header)!.classList.toggle(headerStyles.active);
